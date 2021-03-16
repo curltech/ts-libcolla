@@ -50,7 +50,7 @@
   ],
   "dependencies": {
     "@privacyresearch/libsignal-protocol-typescript": "0.0.12",
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "base32.js": "^0.1.0",
     "datastore-level": "^2.0.0",
     "google-libphonenumber": "^3.2.13",
