@@ -24,7 +24,7 @@ export class PounchDb extends DataStore {
 			}
 		 */
 		if (PouchdbSearch.lunr) {
-			let lunr = PouchdbSearch.lunr()
+			let lunr: any = PouchdbSearch.lunr()
 			lunr.tokenizer = this.tokenizer
 			lunr.trimmer = this.trimmer
 		}

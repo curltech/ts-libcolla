@@ -12,4 +12,4 @@ export class ChainApp extends StatusEntity {
 }
 export class ChainAppService extends BaseService {
 }
-export let chainAppService = new ChainAppService("blc_chainApp", null)
+export let chainAppService = new ChainAppService("blc_chainApp", null, null)

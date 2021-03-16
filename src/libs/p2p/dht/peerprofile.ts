@@ -27,4 +27,4 @@ export class PeerProfile extends StatusEntity {
 }
 export class PeerProfileService extends BaseService {
 }
-export let peerProfileService = new PeerProfileService("blc_peerProfile", ['peerId'])
+export let peerProfileService = new PeerProfileService("blc_peerProfile", ['peerId'], null)

@@ -41,4 +41,4 @@ export class ConsensusLog extends StatusEntity {
 export class ConsensusLogService extends BaseService {
     
 }
-export let consensusLogService = new ConsensusLogService("blc_consensuslog", new ConsensusLog())
+export let consensusLogService = new ConsensusLogService("blc_consensuslog", null, null)

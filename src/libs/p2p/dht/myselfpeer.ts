@@ -436,4 +436,4 @@ export class MyselfPeerService extends BaseService {
     return myself.myselfPeerClient
   }
 }
-export let myselfPeerService = new MyselfPeerService("blc_myselfPeer", ['endDate', 'peerId', 'mobile', 'status', 'updateDate'])
+export let myselfPeerService = new MyselfPeerService("blc_myselfPeer", ['endDate', 'peerId', 'mobile', 'status', 'updateDate'], null)

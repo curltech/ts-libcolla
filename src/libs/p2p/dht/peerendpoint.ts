@@ -9,4 +9,4 @@ export class PeerEndpoint extends PeerEntity {
 }
 export class PeerEndpointService extends BaseService {
 }
-export let peerEndpointService = new PeerEndpointService("blc_peerEndpoint", ['ownerPeerId', 'priority', 'address'])
+export let peerEndpointService = new PeerEndpointService("blc_peerEndpoint", ['ownerPeerId', 'priority', 'address'], null)

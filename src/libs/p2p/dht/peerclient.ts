@@ -6,6 +6,7 @@ import { connectAction } from '../chain/action/connect'
 import { myself, myselfPeerService } from './myselfpeer'
 import { openpgp } from '../crypto/openpgp'
 import { config } from '../conf/conf'
+import { PayloadType } from '../chain/baseaction'
 
 export class PeerClient extends StatusEntity {
   public peerId!: string
@@ -171,7 +172,7 @@ export class PeerClientService extends BaseService {
     return best
   }
 
-  async preparePeerClient(connectPeerId: string, activeStatus: string): PeerClient {
+  async preparePeerClient(connectPeerId: string, activeStatus: string): Promise<PeerClient> {
     if (!connectPeerId) {
       connectPeerId = config.appParams.connectPeerId[0]
     }
@@ -264,4 +265,4 @@ export class PeerClientService extends BaseService {
     return result
   }
 }
-export let peerClientService = new PeerClientService("blc_peerClient", ['mobile'])
+export let peerClientService = new PeerClientService("blc_peerClient", ['mobile'], null)

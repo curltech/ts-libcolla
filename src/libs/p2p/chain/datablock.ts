@@ -442,7 +442,7 @@ export class DataBlockService extends BaseService {
 							}
 						}
 					} else {
-						let srcPublicKey = peerClientService.getPublic(dataBlock.peerId)
+						let srcPublicKey = await peerClientService.getPublic(dataBlock.peerId)
 						if (!srcPublicKey) {
 							throw new Error("NullSrcPublicKey")
 						}
@@ -671,4 +671,4 @@ export class DataBlockService extends BaseService {
 		return data
 	}
 }
-export let dataBlockService = new DataBlockService("blc_dataBlock", new DataBlock())
+export let dataBlockService = new DataBlockService("blc_dataBlock", null, null)
