@@ -173,6 +173,9 @@ export class WebrtcPeer {
 		this.removeLocalStream(stream)
 		this.removeRemoteStream(stream)
 	}
+	/**
+	 * 空参数全部删除
+	 */
 	removeLocalStream(stream: any){
 		let i: number = 0
 		for (let _stream of this._localStreams) {
@@ -184,6 +187,9 @@ export class WebrtcPeer {
 			++i
 		}
 	}
+	/**
+	 * 空参数全部删除
+	 */
 	removeRemoteStream(stream: any){
 		let i: number = 0
 		for (let _stream of this._remoteStreams) {
