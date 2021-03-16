@@ -3,7 +3,7 @@ import { TransactionKey } from './transactionkey'
 import { myself } from '../dht/myselfpeer'
 import { openpgp } from '../crypto/openpgp'
 import { messageSerializer } from './message'
-import { ObjectUtil } from './../../util/util'
+import { ObjectUtil, TypeUtil } from './../../util/util'
 import { merkleTree } from '../crypto/merkleTree'
 import { PeerClient, peerClientService } from '../dht/peerclient'
 import { queryValueAction } from './action/queryvalue'
@@ -252,7 +252,7 @@ export class DataBlockService extends BaseService {
 				}
 			}
 		} else {
-			let srcPublicKey = peerClientService.getPublic(peerId)
+			let srcPublicKey = await peerClientService.getPublic(peerId)
 			if (!srcPublicKey) {
 				throw new Error("NullSrcPublicKey")
 			}
@@ -369,7 +369,7 @@ export class DataBlockService extends BaseService {
 				if (transactionKey.peerId === myself.myselfPeer.peerId) {
 					targetPublicKey = myself.publicKey
 				} else {
-					targetPublicKey = peerClientService.getPublic(transactionKey.peerId)
+					targetPublicKey = await peerClientService.getPublic(transactionKey.peerId)
 				}
 				if (!targetPublicKey) {
 					console.warn("TargetPublicKey is null, will not be encrypted!")
