@@ -4,7 +4,7 @@ import { myself } from '../dht/myselfpeer'
 import { openpgp } from '../crypto/openpgp'
 import { messageSerializer } from './message'
 import { ObjectUtil, TypeUtil } from './../../util/util'
-import { merkleTree } from '../crypto/merkleTree'
+import { merkleTree } from '../crypto/merkletree'
 import { PeerClient, peerClientService } from '../dht/peerclient'
 import { queryValueAction } from './action/queryvalue'
 

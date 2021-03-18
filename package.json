@@ -1,6 +1,6 @@
 {
   "name": "libcolla",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "libcolla",
   "productName": "libcolla",
   "leadMaintainer": "hujs888 <hujs@colla.cc>",
@@ -75,6 +75,7 @@
     "@babel/preset-env": "^7.11.5",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
+    "eslint": "^4.12.1",
     "webpack": "^4.44.1"
   }
 }
