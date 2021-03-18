@@ -10,10 +10,10 @@ class OpenPGP {
       if (w.openpgp) {
         this.openpgp = w.openpgp
       } else {
-        this.openpgp = require('openpgp')
+        this.openpgp = require('openpgp4curltech')
       }
     } catch {
-      this.openpgp = require('openpgp')
+      this.openpgp = require('openpgp4curltech')
     }
   }
   /**

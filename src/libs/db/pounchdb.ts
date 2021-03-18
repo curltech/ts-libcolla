@@ -1,7 +1,7 @@
 import PouchDB from 'pouchdb'
 import { EntityState, DataStore } from './datastore'
 import PouchdbFind from 'pouchdb-find'
-import PouchdbSearch from 'pouchdb-quick-search'
+import PouchdbSearch from 'pouchdb-quick-search4curltech'
 import { TypeUtil } from '../util/util'
 
 /**

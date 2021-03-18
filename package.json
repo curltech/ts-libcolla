@@ -1,6 +1,6 @@
 {
   "name": "libcolla",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "libcolla",
   "productName": "libcolla",
   "leadMaintainer": "hujs888 <hujs@colla.cc>",
@@ -9,7 +9,7 @@
     "Jinhe Zhao <goldjinhe@126.com>"
   ],
   "scripts": {
-    "lint": "eslint --ext .js,.vue src",
+    "lint": "eslint --ext .ts src",
     "test": "echo \"No test specified\" && exit 0",
     "build": "babel src -d lib"
   },
@@ -52,7 +52,6 @@
     "@privacyresearch/libsignal-protocol-typescript": "0.0.12",
     "axios": "^0.21.1",
     "base32.js": "^0.1.0",
-    "datastore-level": "^2.0.0",
     "google-libphonenumber": "^3.2.13",
     "ion-sdk-js": "^1.5.4",
     "ipfs-http-client": "^49.0.2",
@@ -71,5 +70,11 @@
     "simple-peer": "^9.9.3",
     "tiny-cookie": "^2.3.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.1.0",
+    "webpack": "^4.44.1"
+  }
 }
