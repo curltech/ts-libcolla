@@ -151,6 +151,17 @@ export class WebrtcPeer {
 		})
 	}
 
+	on(name:string, fn:any){
+		this._webrtcPeer.on(name,fn)
+	}
+
+	once(name:string, fn:any){
+		this._webrtcPeer.once(name,fn)
+	}
+
+	removeListener(name:string, fn:any){
+		this._webrtcPeer.removeListener(name,fn)
+	}
 
 	attachStream(element: any, stream: any) {
 		if ('srcObject' in element) {
@@ -286,12 +297,12 @@ export class WebrtcPeerPool {
 		return null
 	}
 
-	async create(peerId: string, router: any): Promise<WebrtcPeer> {
+	async create(peerId: string, options:any, router: any): Promise<WebrtcPeer> {
 		let webrtcPeers: WebrtcPeer[] = null
 		if (webrtcPeerPool.webrtcPeers.has(peerId)) {
 			webrtcPeers = webrtcPeerPool.webrtcPeers[peerId]
 		}
-		let webrtcPeer = new WebrtcPeer(peerId, null, true, null, router)
+		let webrtcPeer = new WebrtcPeer(peerId, null, true, options, router)
 		if (!webrtcPeers) {
 			webrtcPeers = []
 		}
@@ -350,11 +361,12 @@ export class WebrtcPeerPool {
 
 	getAll(): WebrtcPeer[] {
 		let webrtcPeers: WebrtcPeer[] = []
-		for (let peers of webrtcPeerPool.webrtcPeers.values()) {
+		let ps = webrtcPeerPool.webrtcPeers.values()
+		webrtcPeerPool.webrtcPeers.forEach((peers , key) =>{
 			for (let peer of peers) {
 				webrtcPeers.push(peer)
 			}
-		}
+		})
 		return webrtcPeers
 	}
 	clear(){
