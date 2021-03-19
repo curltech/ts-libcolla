@@ -20,6 +20,14 @@ class WebrtcEncrypt {
   }
   private useCryptoOffset = true
   private currentKeyIdentifier = 0
+  private keyFrameCount = 0
+  private interFrameCount = 0
+  private keyFrameLastSize = 0
+  private interFrameLastSize = 0
+  private duplicateCount = 0
+  private prevFrameType
+  private prevFrameTimestamp
+  private prevFrameSynchronizationSource
   constructor() { }
   /**
    * 获取当前的加密密钥，表示加密密钥没有和帧数据一起传送
@@ -78,20 +86,20 @@ class WebrtcEncrypt {
     const keyframeBit = view.getUint8(0) & 0x01
     // console.log(view.getUint8(0).toString(16));
     if (keyframeBit === 0) {
-      keyFrameCount++
-      keyFrameLastSize = encodedFrame.data.byteLength
+      this.keyFrameCount++
+      this.keyFrameLastSize = encodedFrame.data.byteLength
     } else {
-      interFrameCount++
-      interFrameLastSize = encodedFrame.data.byteLength
+      this.interFrameCount++
+      this.interFrameLastSize = encodedFrame.data.byteLength
     }
-    if (encodedFrame.type === prevFrameType &&
-      encodedFrame.timestamp === prevFrameTimestamp &&
-      encodedFrame.synchronizationSource === prevFrameSynchronizationSource) {
-      duplicateCount++
+    if (encodedFrame.type === this.prevFrameType &&
+      encodedFrame.timestamp === this.prevFrameTimestamp &&
+      encodedFrame.synchronizationSource === this.prevFrameSynchronizationSource) {
+      this.duplicateCount++
     }
-    prevFrameType = encodedFrame.type
-    prevFrameTimestamp = encodedFrame.timestamp
-    prevFrameSynchronizationSource = encodedFrame.synchronizationSource
+    this.prevFrameType = encodedFrame.type
+    this.prevFrameTimestamp = encodedFrame.timestamp
+    this.prevFrameSynchronizationSource = encodedFrame.synchronizationSource
     controller.enqueue(encodedFrame)
   }
   /**
