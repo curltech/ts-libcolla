@@ -3,6 +3,7 @@ import { config } from '../conf/conf'
 import { Client, LocalStream, Signal, Trickle } from 'ion-sdk-js'
 import { Configuration } from 'ion-sdk-js/lib/client'
 import { IonSignalAction } from '../chain/action/ionsignal'
+import {webrtcPeerPool} from "./webrtc-peer";
 
 /**
  * ion sfu自定义的信号实现
@@ -55,7 +56,7 @@ export class IonSfuSignal implements Signal {
 	 * @param sid 
 	 * @param offer 
 	 */
-	async join(sid: string, offer: RTCSessionDescriptionInit) {
+	async join(sid: string, uid: null | string, offer: RTCSessionDescriptionInit) : Promise<RTCSessionDescriptionInit>{
 		let response: any = await this.call<RTCSessionDescriptionInit>({ type: 'join', sid: sid, sdp: offer.sdp })
 		if (response && response.sdp) {
 			return response.sdp
@@ -211,7 +212,7 @@ export class IonSfuClient {
 			console.error('connected,canot rejoin')
 			return
 		}
-		this._client.join(sid)
+		this._client.join(sid,null)
 	}
 
 	/**
@@ -394,9 +395,9 @@ export class IonSfuClientPool {
 
 	getAll(): IonSfuClient[] {
 		let clients: IonSfuClient[] = []
-		for (let peer of ionSfuClientPool._clients.values()) {
+		ionSfuClientPool._clients.forEach((peer , key) =>{
 			clients.push(peer)
-		}
+		})
 		return clients
 	}
 
