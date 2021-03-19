@@ -13,6 +13,7 @@ import { IonSignalAction, ionSignalAction } from './src/libs/p2p/chain/action/io
 import { pingAction } from './src/libs/p2p/chain/action/ping'
 import { findClientAction } from './src/libs/p2p/chain/action/findclient'
 import { consensusAction } from './src/libs/p2p/chain/action/consensus'
+import { queryPeerTransAction } from './src/libs/p2p/chain/action/querypeertrans'
 import { queryValueAction } from './src/libs/p2p/chain/action/queryvalue'
 import { openpgp } from './src/libs/p2p/crypto/openpgp'
 import { SecurityParams, SecurityPayload } from './src/libs/p2p/crypto/payload'
@@ -47,7 +48,7 @@ export {
   ConsensusLog, ConsensusLogService, consensusLogService,
   PeerEndpoint, peerEndpointService, chainAppService, ChainApp,
   p2pPeer, connectPeerId, connectAddress, iceServer, Language, PeerMode, routerMenu, ClientDevice,
-  BaseAction, PayloadType, SignalAction, ChatMessageType, chatAction, p2pChatAction, pingAction, IonSignalAction, ionSignalAction, signalAction, findClientAction, consensusAction, queryValueAction,
+  BaseAction, PayloadType, SignalAction, ChatMessageType, chatAction, p2pChatAction, pingAction, IonSignalAction, ionSignalAction, signalAction, findClientAction, consensusAction, queryPeerTransAction, queryValueAction,
   openpgp, SecurityParams, SecurityPayload, signalProtocol, HttpClient, httpClientPool, Libp2pClient, libp2pClientPool,
   Websocket, websocketPool, WebrtcPeer, webrtcPeerPool, IonSfuSignal, ionSfuClientPool, IonSfuClient,
   // util
