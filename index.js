@@ -33,6 +33,7 @@ import { HttpClient, httpClientPool } from './src/libs/p2p/transport/httpclient'
 import { Libp2pClient, libp2pClientPool } from './src/libs/p2p/transport/libp2p'
 import { Websocket, websocketPool } from './src/libs/p2p/transport/websocket'
 import { webrtcPeerPool, WebrtcPeer } from './src/libs/p2p/transport/webrtc-peer'
+import { webrtcEncrypt } from './src/libs/p2p/transport/webrtc-encrypt'
 import { IonSfuSignal, ionSfuClientPool, IonSfuClient } from './src/libs/p2p/transport/ionsfuclient'
 
 // util
@@ -50,7 +51,7 @@ export {
   p2pPeer, connectPeerId, connectAddress, iceServer, Language, PeerMode, routerMenu, ClientDevice,
   BaseAction, PayloadType, SignalAction, ChatMessageType, chatAction, p2pChatAction, pingAction, IonSignalAction, ionSignalAction, signalAction, findClientAction, consensusAction, queryPeerTransAction, queryValueAction,
   openpgp, SecurityParams, SecurityPayload, signalProtocol, HttpClient, httpClientPool, Libp2pClient, libp2pClientPool,
-  Websocket, websocketPool, WebrtcPeer, webrtcPeerPool, IonSfuSignal, ionSfuClientPool, IonSfuClient,
+  Websocket, websocketPool, WebrtcPeer, webrtcPeerPool, webrtcEncrypt, IonSfuSignal, ionSfuClientPool, IonSfuClient,
   // util
   TypeUtil, ObjectUtil, CodeUtil, StringUtil, MobileNumberUtil, CollaUtil, BlobUtil, UUID
 }
