@@ -11,6 +11,8 @@ import { ionSfuClientPool } from '../transport/ionsfuclient'
 import { myself } from '../dht/myselfpeer'
 import { ObjectUtil } from '../../util/util'
 
+const packetSize=4*1024*1024
+
 /**
  * 原始消息的分派处理
  */
