@@ -3,8 +3,6 @@ import { config } from '../conf/conf'
 import { UUID, ObjectUtil } from '../../util/util'
 import { ChainMessage, MsgType, MsgDirect } from './message'
 
-const packetSize = 20000
-
 export class PayloadType {
 	static PeerClient = 'peerClient'
 	static PeerEndpoint = 'peerEndpoint'
