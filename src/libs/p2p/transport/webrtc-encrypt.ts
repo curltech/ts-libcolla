@@ -53,9 +53,9 @@ class WebrtcEncrypt {
    */
   supportInsertableStream() {
     const supportsInsertableStreamsLegacy =
-      !!RTCRtpSender.prototype.createEncodedVideoStreams
+      !!(RTCRtpSender.prototype as any).createEncodedVideoStreams
     const supportsInsertableStreams =
-      !!RTCRtpSender.prototype.createEncodedStreams
+      !!(RTCRtpSender.prototype as any).createEncodedStreams
 
     if (!(supportsInsertableStreams || supportsInsertableStreamsLegacy)) {
       return false
