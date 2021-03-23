@@ -42,7 +42,7 @@ export class P2pPeer {
    * 启动p2p节点，返回本节点对象
    * @param bootstrapAddrs 
    */
-  async start(bootstrapAddrs: string[]): Promise<Myself> {
+  async start(bootstrapAddrs: string[]) {
     if (this.host && this.host.isStarted() === true) {
       console.warn('p2pPeer has started! will restart')
       await this.stop()
@@ -422,7 +422,7 @@ export class P2pPeer {
    * const { stream, protocol } = await conn.newStream(['/echo/1.1.0', '/echo/1.0.0'])
    * await conn.close()
    */
-  async dial(peer: any, options: any): Promise<Connection> {
+  async dial(peer: any, options: any): Promise<any> {
     return await this.host.dial(peer, options)
   }
   /**

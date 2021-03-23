@@ -112,10 +112,10 @@ export class IpfsClientNode {
 	async close() {
 		if (!this.client) throw new Error('Connect to a node first')
 		if (this.client && this.topics) {
-			for (let key of this.topics.keys()) {
+			this.topics.forEach(async (topic , key) =>{
 				console.info(`Unsubscribing from topic ${key}`)
 				await this.client.pubsub.unsubscribe(key)
-			}
+			})
 		}
 		this.topics = null
 		this.peerId = null
@@ -170,9 +170,9 @@ export class IpfsClientNode {
 	 */
 	async publishAll(msg: string) {
 		console.info(`Sending message to ${this.topics}...`)
-		for (let key of this.topics.keys()) {
+		this.topics.forEach(async (topic , key) =>{
 			await this.publish(key, msg)
-		}
+		})
 	}
 
 	async publish(topic: string, msg: string) {
