@@ -6,6 +6,7 @@ export class Log extends BaseEntity {
 	public level!: string
 	public code!: string
 	public description!: string
+	public createTimestamp!: number
 }
 
 export class LogService extends BaseService {
@@ -15,7 +16,7 @@ export class LogService extends BaseService {
 		log.code = code
 		log.level = level
 		log.peerId = myself.myselfPeer.peerId
-		log.createDate = new Date()
+		log.createTimestamp = new Date().getTime()
 		log = await this.insert(log)
 		if (level === 'error') {
 			console.error(code + ':' + description)
@@ -34,7 +35,7 @@ export class LogService extends BaseService {
 			await this.delete(logs)
 		}
 	}
-	search(phase: string, level: string, searchDate: number): any[] {
+	search(phase: string, level: string, searchTimestamp: number): any[] {
 		let logResultList = []
 
 		let options = {
@@ -51,15 +52,15 @@ export class LogService extends BaseService {
 		if (logResults && logResults.rows && logResults.rows.length > 0) {
 			for (let logResult of logResults.rows) {
 				let log = logResult.doc
-				let createDateStart: number
-				let createDateEnd: number
-				if (searchDate) {
-					createDateStart = searchDate
-					createDateEnd = searchDate + 24 * 60 * 60 * 1000
+				let createTimestampStart: number
+				let createTimestampEnd: number
+				if (searchTimestamp) {
+					createTimestampStart = searchTimestamp
+					createTimestampEnd = searchTimestamp + 24 * 60 * 60 * 1000
 				}
 				if (log.peerId === myself.myselfPeer.peerId
 				  && (!level || log.level === level)
-				  && (!searchDate || (log.createDate >= createDateStart && log.createDate < createDateEnd))) {
+				  && (!searchTimestamp || (log.createTimestamp >= createTimestampStart && log.createTimestamp < createTimestampEnd))) {
 					if (logResult.highlighting.code) {
 						log.highlighting = logResult.highlighting.code
 					} else if (logResult.highlighting.description) {
@@ -73,4 +74,4 @@ export class LogService extends BaseService {
 		return logResultList
 	}
 }
-export let logService = new LogService("blc_log", ['peerId', 'level', 'createDate'], ['code', 'description'])
+export let logService = new LogService("blc_log", ['peerId', 'level', 'createTimestamp'], ['code', 'description'])
