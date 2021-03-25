@@ -215,7 +215,7 @@ export class BaseService {
 		return null
 	}
 
-	searchPhase(hase: string, fields: string[], options: any, filter: any, from: number, limit: number) {
+	searchPhase(phase: string, fields: string[], options: any, filter: any, from: number, limit: number) {
 		return pounchDb.searchPhase(this.tableName, phase, fields, options, filter, from, limit)
 	}
 }
