@@ -25,8 +25,9 @@ import { PeerEndpoint, peerEndpointService } from './src/libs/p2p/dht/peerendpoi
 import { chainAppService, ChainApp } from './src/libs/p2p/dht/chainapp'
 import { MsgType } from './src/libs/p2p/chain/message'
 import { DataBlock, DataBlockService, dataBlockService, BlockType } from './src/libs/p2p/chain/datablock'
-import { ConsensusLog, ConsensusLogService, consensusLogService } from './src/libs/p2p/chain/consensuslog'
+import { ConsensusLog, consensusLogService } from './src/libs/p2p/chain/consensuslog'
 import { TransactionKey, transactionKeyService } from './src/libs/p2p/chain/transactionkey'
+import { Log, logService } from './src/libs/p2p/db/log'
 import { AppParams, P2pParams, Libp2pParams, config } from './src/libs/p2p/conf/conf'
 import { connectPeerId, connectAddress, iceServer, Language, PeerMode, routerMenu, ClientDevice } from './src/libs/p2p/conf/def'
 import { HttpClient, httpClientPool } from './src/libs/p2p/transport/httpclient'
@@ -46,7 +47,7 @@ export {
   AppParams, P2pParams, Libp2pParams, config,
   BaseEntity, EntityStatus, Myself, myself, MyselfPeer, myselfPeerService, PeerClient, peerClientService,
   PeerProfile, peerProfileService, MsgType, DataBlock, DataBlockService, dataBlockService, BlockType, TransactionKey, transactionKeyService,
-  ConsensusLog, ConsensusLogService, consensusLogService,
+  ConsensusLog, consensusLogService, Log, logService,
   PeerEndpoint, peerEndpointService, chainAppService, ChainApp,
   p2pPeer, connectPeerId, connectAddress, iceServer, Language, PeerMode, routerMenu, ClientDevice,
   BaseAction, PayloadType, SignalAction, ChatMessageType, chatAction, p2pChatAction, pingAction, IonSignalAction, ionSignalAction, signalAction, findClientAction, consensusAction, queryPeerTransAction, queryValueAction,

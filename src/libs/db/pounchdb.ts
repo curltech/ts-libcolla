@@ -540,13 +540,13 @@ export class PounchDb extends DataStore {
 		if (from) {
 			condition.skip = from
 		}/* else {
-      condition.skip = 0
-    }*/
+			condition.skip = 0
+		}*/
 		if (limit) {
 			condition.limit = limit
 		}/* else {
-      condition.limit = 10
-    }*/
+			condition.limit = 10
+		}*/
 		if (filter) {
 			condition.filter = filter
 		}
