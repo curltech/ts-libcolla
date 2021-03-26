@@ -10,23 +10,29 @@ export class Log extends BaseEntity {
 }
 
 export class LogService extends BaseService {
-    async log(description: string, code: string = '', level: string = 'error'): Promise<Log> {
-		let log = new Log()
-		log.description = description
-		log.code = code
-		log.level = level
-		log.peerId = myself.myselfPeer.peerId
-		log.createTimestamp = new Date().getTime()
-		log = await this.insert(log)
+	private logLevel: string = 'none'
+	public static logLevels = ['log', 'warn', 'error', 'none']
+	setLogLevel(logLevel: string) {
+		this.logLevel = logLevel
+	}
+    async log(description: string, code: string = '', level: string = 'error') {
 		if (level === 'error') {
 			console.error(code + ':' + description)
 		} else if (level === 'warn') {
 			console.warn(code + ':' + description)
 		} else {
+			level = 'log'
 			console.log(code + ':' + description)
 		}
-
-		return log
+		if (LogService.logLevels.indexOf(level) >= LogService.logLevels.indexOf(this.logLevel)) {
+			let log = new Log()
+			log.description = description
+			log.code = code
+			log.level = level
+			log.peerId = myself.myselfPeer.peerId
+			log.createTimestamp = new Date().getTime()
+			log = await this.insert(log)
+		}
 	}
 	async clean() {
 		let condition = { peerId: myself.myselfPeer.peerId }
