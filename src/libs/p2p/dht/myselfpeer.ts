@@ -134,6 +134,7 @@ export class MyselfPeerService extends BaseService {
     peerProfile.localDataCryptoSwitch = false
     peerProfile.fullTextSearchSwitch = false
     peerProfile.developerOption = false
+    peerProfile.logLevel = 'none'
     peerProfile.lastSyncTime = currentDate
     peerProfile = await peerProfileService.upsert(peerProfile)
     myself.peerProfile = peerProfile
@@ -330,6 +331,7 @@ export class MyselfPeerService extends BaseService {
         peerProfile.localDataCryptoSwitch = peers[0].localDataCryptoSwitch
         peerProfile.fullTextSearchSwitch = peers[0].fullTextSearchSwitch
         peerProfile.developerOption = peers[0].developerOption
+        peerProfile.logLevel = peers[0].logLevel
         peerProfile.lastSyncTime = new Date('1970-01-01T00:00:00.000Z')
         peerProfile.status = EntityStatus[EntityStatus.Effective]
         peerProfile.statusDate = currentDate
@@ -431,6 +433,7 @@ export class MyselfPeerService extends BaseService {
       myself.myselfPeerClient.localDataCryptoSwitch = myself.peerProfile.localDataCryptoSwitch,
       myself.myselfPeerClient.fullTextSearchSwitch = myself.peerProfile.fullTextSearchSwitch,
       myself.myselfPeerClient.developerOption = myself.peerProfile.developerOption,
+      myself.myselfPeerClient.logLevel = myself.peerProfile.logLevel,
       myself.myselfPeerClient.lastSyncTime = myself.peerProfile.lastSyncTime
     }
     return myself.myselfPeerClient

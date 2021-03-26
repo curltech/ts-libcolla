@@ -12,6 +12,7 @@ export class Log extends BaseEntity {
 export class LogService extends BaseService {
 	private logLevel: string = 'none'
 	public static logLevels = ['log', 'warn', 'error', 'none']
+
 	setLogLevel(logLevel: string) {
 		this.logLevel = logLevel
 	}
@@ -41,7 +42,7 @@ export class LogService extends BaseService {
 			await this.delete(logs)
 		}
 	}
-	search(phase: string, level: string, searchTimestamp: number): any[] {
+	async search(phase: string, level: string, searchTimestamp: number): Promise<any> {
 		let logResultList = []
 
 		let options = {
@@ -53,7 +54,7 @@ export class LogService extends BaseService {
 				return doc.peerId === myself.myselfPeer.peerId
 			}
 		}*/
-		let logResults = this.searchPhase(phase, ['code', 'description'], options, null, 0, 0)
+		let logResults = await this.searchPhase(phase, ['code', 'description'], options, null, 0, 0)
 		console.info(logResults)
 		if (logResults && logResults.rows && logResults.rows.length > 0) {
 			for (let logResult of logResults.rows) {

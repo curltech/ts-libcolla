@@ -23,6 +23,7 @@ export class PeerProfile extends StatusEntity {
   public localDataCryptoSwitch!: boolean
   public fullTextSearchSwitch!: boolean
   public developerOption!: boolean
+  public logLevel!: string
   public lastSyncTime!: Date
 }
 export class PeerProfileService extends BaseService {

@@ -215,7 +215,11 @@ export class BaseService {
 		return null
 	}
 
-	searchPhase(phase: string, fields: string[], options: any, filter: any, from: number, limit: number) {
-		return pounchDb.searchPhase(this.tableName, phase, fields, options, filter, from, limit)
+	buildIndex(fields: string[]) {
+		return pounchDb.buildIndex(this.tableName, fields)
+	}
+
+	async searchPhase(phase: string, fields: string[], options: any, filter: any, from: number, limit: number): Promise<any> {
+		return await pounchDb.searchPhase(this.tableName, phase, fields, options, filter, from, limit)
 	}
 }
