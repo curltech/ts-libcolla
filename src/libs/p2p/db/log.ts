@@ -69,9 +69,10 @@ export class LogService extends BaseService {
 				  && (!level || log.level === level)
 				  && (!searchTimestamp || (log.createTimestamp >= createTimestampStart && log.createTimestamp < createTimestampEnd))) {
 					if (logResult.highlighting.code) {
-						log.highlighting = logResult.highlighting.code
-					} else if (logResult.highlighting.description) {
-						log.highlighting = logResult.highlighting.description
+						log.highlightingCode = logResult.highlighting.code
+					}
+					if (logResult.highlighting.description) {
+						log.highlightingDescription = logResult.highlighting.description
 					}
 					logResultList.push(log)
 				}
