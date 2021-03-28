@@ -8,7 +8,7 @@ import { merkleTree } from '../crypto/merkletree'
 import { PeerClient, peerClientService } from '../dht/peerclient'
 import { queryValueAction } from './action/queryvalue'
 
-const CompressLimit: number = 2048
+const SliceLimit = 4096 * 1024
 
 export class DataBlock extends StatusEntity {
 	public blockId!: string
@@ -33,9 +33,6 @@ export class DataBlock extends StatusEntity {
 	public payload!: any
 	public payloadKey!: string
 	public transportPayload!: string
-
-	public needCompress: boolean
-	public needEncrypt: boolean
 	/**
 	 * transactionKeys的寄送格式，每个交易的第一个分片有数据，保证每个交易可以单独被查看
 	 */
@@ -108,8 +105,6 @@ export class BlockType {
 	static Collection = 'Collection'
 }
 
-const SliceLimit = 4096 * 1024
-
 export class DataBlockService extends BaseService {
 	static create(blockId: string, businessNumber: string, blockType: string, createTimestamp: number, payload: any, peers: PeerClient[]): DataBlock {
 		let dataBlock = new DataBlock()
@@ -122,15 +117,6 @@ export class DataBlockService extends BaseService {
 			dataBlock.metadata = payload.metadata
 			dataBlock.expireDate = payload.expireDate
 			dataBlock.mimeType = payload.mimeType
-			let needCompress = payload.needCompress
-			if (needCompress === null || needCompress === undefined) {
-				if (payload.payload && payload.payload.length > CompressLimit) {
-					needCompress = 'gzip'
-				} else {
-					needCompress = 'none'
-				}
-			}
-			dataBlock.needCompress = needCompress
 		}
 		if (peers && peers.length > 0) {
 			let transactionKeys = []
@@ -399,17 +385,10 @@ export class DataBlockService extends BaseService {
 		}
 		let data: Uint8Array = openpgp.stringToUtf8Uint8Array(transportPayload)
 		// 压缩原始数据
-		let needCompress = dataBlock.needCompress
-		if (needCompress === true && data.length > CompressLimit) {
-			data = openpgp.compress(data)
-		} else {
-			dataBlock.needCompress = false
-		}
+		data = openpgp.compress(data)
 		// 对数据进行对称加密
 		if (secretKey) {
 			data = await openpgp.aesEncrypt(data, secretKey)
-		} else {
-			dataBlock.needEncrypt = false
 		}
 		// 最终的数据放入
 		dataBlock.transportPayload = openpgp.encodeBase64(data)
@@ -507,10 +486,7 @@ export class DataBlockService extends BaseService {
 			let payload = null
 			if (data) {
 				// 解压缩
-				let needCompress = dataBlock.needCompress
-				if (needCompress === true) {
-					data = openpgp.uncompress(data)
-				}
+				data = openpgp.uncompress(data)
 				// 还原数据
 				let str: string = openpgp.utf8Uint8ArrayToString(data)
 				payload = messageSerializer.textUnmarshal(str)

@@ -3,7 +3,7 @@ import { messageSerializer } from '../chain/message'
 import { myself } from '../dht/myselfpeer'
 import { peerClientService } from '../dht/peerclient'
 
-const compressLimit: number = 2048
+const CompressLimit: number = 2048
 
 export class SecurityParams {
 	constructor() { }
@@ -56,7 +56,7 @@ export class SecurityPayload {
 		}
 
 		// 本地保存NeedCompress为true即压缩，ChainMessage压缩还需判断transportPayload.length
-		if (securityParams.NeedCompress === true && (!targetPeerId || (targetPeerId && transportPayload.length > compressLimit))) {
+		if (securityParams.NeedCompress === true && (!targetPeerId || (targetPeerId && transportPayload.length > CompressLimit))) {
 			//2. 压缩数据
 			data = openpgp.compress(data)
 		} else {
