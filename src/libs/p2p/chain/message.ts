@@ -163,6 +163,7 @@ class MessageSerializer {
 
 	unmarshal(data: Uint8Array): any {
 		let json: string = this.uint8ArrayToString(data)
+		console.log(json)
 
 		return this.textUnmarshal(json)
 	}
@@ -173,6 +174,7 @@ class MessageSerializer {
 	}
 
 	textUnmarshal(data: string): any {
+		console.log(data)
 		let value = JSON.parse(data)
 		return value
 	}
