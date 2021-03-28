@@ -163,7 +163,10 @@ class MessageSerializer {
 
 	unmarshal(data: Uint8Array): any {
 		let json: string = this.uint8ArrayToString(data)
-		console.log(json)
+		console.log(json.length)
+		if (json.length >= 20) {
+			console.log(json.substring(json.length - 20, json.length))
+		}
 
 		return this.textUnmarshal(json)
 	}
