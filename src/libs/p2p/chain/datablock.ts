@@ -8,7 +8,7 @@ import { merkleTree } from '../crypto/merkletree'
 import { PeerClient, peerClientService } from '../dht/peerclient'
 import { queryValueAction } from './action/queryvalue'
 
-const SliceLimit = 128 * 1024
+const SliceLimit = 512 * 1024
 
 export class DataBlock extends StatusEntity {
 	public blockId!: string
