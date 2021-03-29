@@ -173,7 +173,6 @@ class MessageSerializer {
 	}
 
 	textUnmarshal(data: string): any {
-		console.log(data)
 		let value = JSON.parse(data)
 		return value
 	}

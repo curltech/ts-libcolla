@@ -150,7 +150,7 @@ export class SecurityPayload {
 			let needCompress = securityParams.NeedCompress
 			if (needCompress === true) {
 				// 2. 解压缩
-				data = await openpgp.uncompress(data)
+				data = openpgp.uncompress(data)
 			}
 			//3. 消息的数据部分，验证签名
 			if (needEncrypt === true) {

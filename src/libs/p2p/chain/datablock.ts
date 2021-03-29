@@ -8,7 +8,7 @@ import { merkleTree } from '../crypto/merkletree'
 import { PeerClient, peerClientService } from '../dht/peerclient'
 import { queryValueAction } from './action/queryvalue'
 
-const SliceLimit = 64 * 1024
+const SliceLimit = 128 * 1024
 
 export class DataBlock extends StatusEntity {
 	public blockId!: string
@@ -154,7 +154,7 @@ export class DataBlockService extends BaseService {
 			let mimeType = dataBlock.mimeType
 			let db: DataBlock = null
 			let slicePayload = null
-			if (transportPayload != null && transportPayload.length > SliceLimit) {
+			if (transportPayload && transportPayload.length > SliceLimit) {
 				sliceSize = transportPayload.length / SliceLimit
 				sliceSize = Math.ceil(sliceSize)
 				for (let i = 0; i < sliceSize; ++i) {
@@ -255,7 +255,7 @@ export class DataBlockService extends BaseService {
 	 * @param dbs 
 	 */
 	static group(dbs: DataBlock[]): any {
-		if (dbs != null && dbs.length > 0) {
+		if (dbs && dbs.length > 0) {
 			let dbMap: any = {}
 			for (let db of dbs) {
 				let blockId = db.blockId

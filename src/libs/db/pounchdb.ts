@@ -123,10 +123,10 @@ export class PounchDb extends DataStore {
 
 		return back
 	}
-	get(tableName: string, _id: number) {
+	async get(tableName: string, _id: number) {
 		let ds = this.db[tableName]
 		try {
-			return ds.get(_id)
+			return await ds.get(_id)
 		} catch (err) {
 			if (err.status === 404) { // not found!
 				return null
