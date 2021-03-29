@@ -129,11 +129,32 @@ export class SignalProtocol {
 
 	//调用init后写入myself.SignalPrivateKey
 	async export(password: string) {
-		let buf = messageSerializer.marshal(this.signalKeyPair)
+
+		let signalKeyPair : any = Object.create(null);
+		signalKeyPair.registrationId = this.signalKeyPair.registrationId
+		signalKeyPair.identityKey = {
+			pubKey : messageSerializer.arrayBufferToString(this.signalKeyPair.identityKey.pubKey),
+			privKey : messageSerializer.arrayBufferToString(this.signalKeyPair.identityKey.privKey)
+		}
+		signalKeyPair.signedPreKey = {
+			keyId: this.signalKeyPair.signedPreKey.keyId,
+			keyPair:{
+				pubKey: messageSerializer.arrayBufferToString(this.signalKeyPair.signedPreKey.keyPair.pubKey),
+				privKey: messageSerializer.arrayBufferToString(this.signalKeyPair.signedPreKey.keyPair.privKey),
+				},
+			signature: messageSerializer.arrayBufferToString(this.signalKeyPair.signedPreKey.signature),
+		}
+		signalKeyPair.preKey = {
+			keyId: this.signalKeyPair.preKey.keyId,
+			keyPair :{
+				pubKey: messageSerializer.arrayBufferToString(this.signalKeyPair.preKey.keyPair.pubKey),
+				privKey: messageSerializer.arrayBufferToString(this.signalKeyPair.preKey.keyPair.privKey)
+			}
+		}
+		let buf = messageSerializer.marshal(signalKeyPair)
 		buf = openpgp.compress(buf)
 		let cipher = await openpgp.aesEncrypt(buf, password)
 		let base64 = openpgp.encodeBase64(cipher)
-
 		return base64
 	}
 
@@ -142,11 +163,35 @@ export class SignalProtocol {
 		let cipher = openpgp.decodeBase64(base64)
 		let buf = await openpgp.aesDecrypt(cipher, password)
 		buf = openpgp.uncompress(buf)
+		if(!this.signalKeyPair){
+			this.signalKeyPair = new SignalKeyPair()
+			this.signalSessions = new Map<string, SignalSession>()
+			this.signalPublicKeys = new Map<string, string>()
+		}
 		let signalKeyPair = messageSerializer.unmarshal(buf)
+		signalKeyPair.identityKey.pubKey = messageSerializer.stringToArrayBuffer(signalKeyPair.identityKey.pubKey)
+		signalKeyPair.identityKey.privKey = messageSerializer.stringToArrayBuffer(signalKeyPair.identityKey.privKey)
+
+		signalKeyPair.signedPreKey.keyPair.pubKey = messageSerializer.stringToArrayBuffer(signalKeyPair.signedPreKey.keyPair.pubKey)
+		signalKeyPair.signedPreKey.keyPair.privKey = messageSerializer.stringToArrayBuffer(signalKeyPair.signedPreKey.keyPair.privKey)
+
+		signalKeyPair.preKey.keyPair.pubKey = messageSerializer.stringToArrayBuffer(signalKeyPair.preKey.keyPair.pubKey)
+		signalKeyPair.preKey.keyPair.privKey = messageSerializer.stringToArrayBuffer(signalKeyPair.preKey.keyPair.privKey)
+
 		this.signalKeyPair.registrationId = signalKeyPair.registrationId
 		this.signalKeyPair.identityKey = signalKeyPair.identityKey
 		this.signalKeyPair.preKey = signalKeyPair.preKey
 		this.signalKeyPair.signedPreKey = signalKeyPair.signedPreKey
+
+
+		signalProtocolStore.put(`registrationID`, this.signalKeyPair.registrationId)
+		signalProtocolStore.put('identityKey', this.signalKeyPair.identityKey)
+
+		const baseKeyId = 1
+		signalProtocolStore.storePreKey(`${baseKeyId}`, this.signalKeyPair.preKey.keyPair)
+
+		const signedPreKeyId = 2
+		signalProtocolStore.storeSignedPreKey(signedPreKeyId, this.signalKeyPair.signedPreKey.keyPair)
 	}
 
 	//把自己的密钥的公钥部分存入peerClient并上传到服务器
@@ -154,16 +199,6 @@ export class SignalProtocol {
 		// Now we register this with the server or other directory so all users can see them.
 		// You might implement your directory differently, this is not part of the SDK.
 		this.name = name
-		// const publicSignedPreKey: libsignal.SignedPublicPreKeyType = {
-		// 	keyId: this.signalKeyPair.signedPreKey.keyId,
-		// 	publicKey: this.signalKeyPair.signedPreKey.keyPair.pubKey,
-		// 	signature: this.signalKeyPair.signedPreKey.signature,
-		// }
-
-		// const publicPreKey: libsignal.PreKeyType = {
-		// 	keyId: this.signalKeyPair.preKey.keyId,
-		// 	publicKey: this.signalKeyPair.preKey.keyPair.pubKey,
-		// }
 
 		let signalPublicKey : any = Object.create(null);
 		signalPublicKey.registrationId = this.signalKeyPair.registrationId
@@ -171,11 +206,11 @@ export class SignalProtocol {
 		signalPublicKey.signedPreKey = {
 			keyId: this.signalKeyPair.signedPreKey.keyId,
 			publicKey: messageSerializer.arrayBufferToString(this.signalKeyPair.signedPreKey.keyPair.pubKey),
-			signature: messageSerializer.arrayBufferToString(this.signalKeyPair.signedPreKey.signature),
+			signature: messageSerializer.arrayBufferToString(this.signalKeyPair.signedPreKey.signature)
 		}
 		signalPublicKey.preKey = {
 			keyId: this.signalKeyPair.preKey.keyId,
-			publicKey: messageSerializer.arrayBufferToString(this.signalKeyPair.preKey.keyPair.pubKey),
+			publicKey: messageSerializer.arrayBufferToString(this.signalKeyPair.preKey.keyPair.pubKey)
 		}
 		// json化后调用putClient放入服务器的publicKey字段
 		let buf = messageSerializer.marshal(signalPublicKey)
