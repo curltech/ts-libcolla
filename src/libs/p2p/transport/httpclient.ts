@@ -14,7 +14,7 @@ export class HttpClient {
 			this.address = address
 		}
 		this._client.defaults.timeout = 1800000
-		this._client.defaults.withCredentials = true
+		//this._client.defaults.withCredentials = true
 
 		// request interceptor
 		this._client.interceptors.request.use(config => {
