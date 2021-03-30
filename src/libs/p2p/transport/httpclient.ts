@@ -9,7 +9,7 @@ export class HttpClient {
 
 	constructor(address: string) {
 		this._client = axios.create()
-		if (address && (address.startsWith('http') || address && address.startsWith('https'))) {
+		if (address && address.startsWith('http')) {
 			this._client.defaults.baseURL = address
 			this.address = address
 		}
@@ -18,11 +18,11 @@ export class HttpClient {
 
 		// request interceptor
 		this._client.interceptors.request.use(config => {
-			/*let token = cookie.get('token')
+			let token = cookie.get('token')
 			if (token) {
 				// 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
 				config.headers['Authorization'] = 'Bearer ' + token
-			}*/
+			}
 			return config
 		}, error => {
 			Promise.reject(error)
