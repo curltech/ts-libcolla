@@ -9,7 +9,7 @@ export class HttpClient {
 
 	constructor(address: string) {
 		this._client = axios.create()
-		if (address && address.startsWith('http')) {
+		if (address && (address.startsWith('http') || address && address.startsWith('https'))) {
 			this._client.defaults.baseURL = address
 			this.address = address
 		}
