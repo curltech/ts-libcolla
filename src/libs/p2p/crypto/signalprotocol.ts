@@ -53,7 +53,7 @@ export class SignalSession {
 			try {
 				plaintext = await this.sessionCipher.decryptPreKeyWhisperMessage(ciphertext.body!, 'binary')
 			} catch (e) {
-				// handle identity key conflict
+				console.log(e)
 			}
 		} else if (ciphertext.type === 1) {
 			// It is a WhisperMessage for an established session.
@@ -76,7 +76,6 @@ export class SignalSession {
 		signalProtocol.close(this.targetPeerId, this.connectPeerId, this.connectSessionId)
 		let identifier = this.signalProtocolAddress.getName()
 		signalProtocolStore.removeSession(identifier)
-		signalProtocolStore.removeIdentity(identifier)
 	}
 }
 
@@ -297,3 +296,4 @@ export class SignalProtocol {
 	}
 }
 export let signalProtocol = new SignalProtocol()
+window.signalProtocol = signalProtocol
