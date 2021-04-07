@@ -2,7 +2,7 @@ import { TypeUtil } from '../../util/util'
 import { config } from '../conf/conf'
 import { SignalAction } from '../chain/action/signal'
 
-const SimplePeer = require('simple-peer4curltech')
+const SimplePeer = require('simple-peer-curltech')
 
 export class WebrtcPeer {
 	private _webrtcPeer: SimplePeer
