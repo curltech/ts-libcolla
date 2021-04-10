@@ -84,6 +84,7 @@ export class WebrtcPeer {
 		if (options.stream) {
 			this._localStreams.push(options.stream)
 		}
+		options.extension = { iceServer : iceServer }
 		this._options = options
 		// 自定义属性，表示本节点createOffer时加入的sfu的编号，作为出版者还是订阅者，还是都是
 		this._router = router
@@ -245,6 +246,8 @@ export class WebrtcPeer {
  * webrtc的连接池，键值是对方的peerId
  */
 export class WebrtcPeerPool {
+	public peerId : string
+	public peerPublicKey : string
 	private webrtcPeers = new Map<string, WebrtcPeer[]>()
 	private _events: Map<string, any> = new Map<string, any>()
 	private _signalAction: SignalAction = null
@@ -394,7 +397,19 @@ export class WebrtcPeerPool {
 		// peerId的连接不存在，被动方创建WebrtcPeer，被动创建WebrtcPeer
 		if (!webrtcPeerPool.webrtcPeers.has(peerId)) {
 			console.info('webrtcPeer:' + peerId + ' not exist, will create receiver')
-			webrtcPeer = new WebrtcPeer(peerId, null, false, null, null)
+			let iceServer = null
+			if(data.extension && data.extension.iceServer){
+				iceServer = []
+				for(let iceServerItem of data.extension.iceServer){
+					if(iceServerItem.username){
+						iceServerItem.username = webrtcPeerPool.peerId
+						iceServerItem.credential = webrtcPeerPool.peerPublicKey
+					}
+					iceServer.push(iceServerItem)
+				}
+				iceServer = data.extension.iceServer
+			}
+			webrtcPeer = new WebrtcPeer(peerId, iceServer, false, null, null)
 			webrtcPeer.connectPeerId = connectPeerId
 			webrtcPeer.connectSessionId = connectSessionId
 			let webrtcPeers: WebrtcPeer[] = []
