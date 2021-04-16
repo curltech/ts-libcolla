@@ -1,5 +1,4 @@
-# ts-libcolla
-A TypeScript library provides communication infrastructure to support Decentralization and End-to-End Encryption etc.
+### A TypeScript library provides communication infrastructure to support Decentralization and End-to-End Encryption etc.
 
 # License
 Copyright 2020-2021 CURL TECH PTE. LTD.
