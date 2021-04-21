@@ -97,7 +97,7 @@ export class WebrtcPeer {
 		 * 可以发起信号
 		 */
 		this._webrtcPeer.on('signal', async data => {
-			console.info(new Date() + ':can signal to peer:' + this._targetPeerId + ';connectPeer:' + this._connectPeerId + ' session:' + this._connectSessionId)
+			//console.info(new Date() + ':can signal to peer:' + this._targetPeerId + ';connectPeer:' + this._connectPeerId + ' session:' + this._connectSessionId)
 			if (this._router) {
 				data.router = this._router
 			}
@@ -145,10 +145,11 @@ export class WebrtcPeer {
 		})
 
 		this._webrtcPeer.on('error', async (err) => {
-			console.error(new Date() + ':error:' + JSON.stringify(err))
+			//console.error(new Date() + ':error:' + JSON.stringify(err))
 			// 重试的次数需要限制，超过则从池中删除
 			//this.init(this._targetPeerId, this._iceServer, null, this._options)
-			await webrtcPeerPool.emitEvent('error', { error: err, source: this })
+			console.log('webrtc disconnect')
+			//await webrtcPeerPool.emitEvent('error', { error: err, source: this })
 		})
 	}
 
@@ -387,7 +388,7 @@ export class WebrtcPeerPool {
 	async receive(peerId: string, connectPeerId: string, connectSessionId: string, data: any) {
 		let type = data.type
 		if (type) {
-			console.info('receive signal type: ' + type + ' from webrtcPeer: ' + peerId)
+			//console.info('receive signal type: ' + type + ' from webrtcPeer: ' + peerId)
 		}
 		if(type === 'offer'){
 			await webrtcPeerPool.remove(peerId, connectPeerId, connectSessionId)
@@ -446,7 +447,7 @@ export class WebrtcPeerPool {
 			//console.info('webrtcPeer:' + peerId + ' exist, connected:' + webrtcPeer.connected)
 		}
 		if (webrtcPeer) {
-			console.info('webrtcPeer signal data:' + JSON.stringify(data))
+			//console.info('webrtcPeer signal data:' + JSON.stringify(data))
 			webrtcPeer.signal(data)
 		}
 	}
@@ -513,7 +514,7 @@ export class WebrtcPeerPool {
 	async sendSignal(evt: any): Promise<any> {
 		try {
 			let targetPeerId = evt.source.targetPeerId
-			console.info('webrtcPeer:' + targetPeerId + ' send signal:' + JSON.stringify(evt.data))
+			//console.info('webrtcPeer:' + targetPeerId + ' send signal:' + JSON.stringify(evt.data))
 			let result = await webrtcPeerPool._signalAction.signal(null, evt.data, targetPeerId)
 			if (result === 'ERROR') {
 				console.error('signal err:' + result)

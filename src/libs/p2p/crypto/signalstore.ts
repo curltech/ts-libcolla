@@ -123,7 +123,7 @@ export class SignalProtocolStore implements libsignal.StorageType {
 		throw new Error(`stored key has wrong type`)
 	}
 	async removePreKey(keyId: number | string): Promise<void> {
-		this.remove('25519KeypreKey' + keyId)
+		//this.remove('25519KeypreKey' + keyId)
 	}
 	async saveIdentity(identifier: string, identityKey: ArrayBuffer): Promise<boolean> {
 		if (identifier === null || identifier === undefined)
