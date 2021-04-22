@@ -7,6 +7,7 @@ const SimplePeer = require('simple-peer-curltech')
 export class WebrtcPeer {
 	private _webrtcPeer: SimplePeer
 	private _targetPeerId: string
+	private _clientId: string
 	private _connectPeerId: string
 	private _connectSessionId: string
 	private _iceServer: []
@@ -34,6 +35,12 @@ export class WebrtcPeer {
 	}
 	set connectPeerId(connectPeerId: string) {
 		this._connectPeerId = connectPeerId
+	}
+	get clientId() {
+		return this._clientId
+	}
+	set clientId(clientId: string) {
+		this._clientId = clientId
 	}
 
 	/**
@@ -84,7 +91,7 @@ export class WebrtcPeer {
 		if (options.stream) {
 			this._localStreams.push(options.stream)
 		}
-		options.extension = { iceServer : iceServer }
+		options.extension = { iceServer : iceServer ,clientId : webrtcPeerPool.clientId }
 		this._options = options
 		// 自定义属性，表示本节点createOffer时加入的sfu的编号，作为出版者还是订阅者，还是都是
 		this._router = router
@@ -100,6 +107,9 @@ export class WebrtcPeer {
 			//console.info(new Date() + ':can signal to peer:' + this._targetPeerId + ';connectPeer:' + this._connectPeerId + ' session:' + this._connectSessionId)
 			if (this._router) {
 				data.router = this._router
+			}
+			if((data.type === 'offer' || data.type === 'answer') || data.extension && data.extension.clientId){
+				this._clientId = data.extension.clientId
 			}
 			await webrtcPeerPool.emitEvent('signal', { data: data, source: this })
 		})
@@ -117,7 +127,7 @@ export class WebrtcPeer {
 
 		this._webrtcPeer.on('close', async () => {
 			console.info(new Date() + ':connected peer close: ' + this._targetPeerId + ';connectPeer:' + this._connectPeerId + ' session:' + this._connectSessionId + ', is closed')
-			await webrtcPeerPool.remove(this._targetPeerId, this._connectPeerId, this._connectSessionId)
+			await webrtcPeerPool.remove(this._targetPeerId, this._connectPeerId, this._connectSessionId, this._clientId)
 			await webrtcPeerPool.emitEvent('close', { source: this })
 		})
 
@@ -145,7 +155,7 @@ export class WebrtcPeer {
 		})
 
 		this._webrtcPeer.on('error', async (err) => {
-			//console.error(new Date() + ':error:' + JSON.stringify(err))
+			console.error(new Date() + ':error:' + JSON.stringify(err))
 			// 重试的次数需要限制，超过则从池中删除
 			//this.init(this._targetPeerId, this._iceServer, null, this._options)
 			console.log('webrtc disconnect')
@@ -239,7 +249,7 @@ export class WebrtcPeer {
 
 	async destroy(err: any) {
 		await this._webrtcPeer.destroy(err)
-		webrtcPeerPool.remove(this._targetPeerId, this._connectPeerId, this._connectSessionId)
+		webrtcPeerPool.remove(this._targetPeerId, this._connectPeerId, this._connectSessionId, this._clientId)
 	}
 }
 
@@ -249,6 +259,7 @@ export class WebrtcPeer {
 export class WebrtcPeerPool {
 	public peerId : string
 	public peerPublicKey : string
+	public clientId : string
 	private webrtcPeers = new Map<string, WebrtcPeer[]>()
 	private _events: Map<string, any> = new Map<string, any>()
 	private _signalAction: SignalAction = null
@@ -316,17 +327,13 @@ export class WebrtcPeerPool {
 		return webrtcPeer
 	}
 
-	async remove(peerId: string, connectPeerId: string, connectSessionId: string): Promise<boolean> {
+	async remove(peerId: string, connectPeerId: string, connectSessionId: string,clientId: string): Promise<boolean> {
 		if (webrtcPeerPool.webrtcPeers.has(peerId)) {
 			let webrtcPeers: WebrtcPeer[] = webrtcPeerPool.webrtcPeers.get(peerId)
 			if (webrtcPeers && webrtcPeers.length > 0) {
 				let i: number = 0
 				for (let webrtcPeer of webrtcPeers) {
-					if ((!webrtcPeer.connectPeerId  || webrtcPeer.connectPeerId === connectPeerId)
-						&& (!webrtcPeer.connectSessionId || webrtcPeer.connectSessionId === connectSessionId)) {
-						webrtcPeers.splice(i, 1)
-						break
-					}
+					 webrtcPeers.splice(i, 1)
 					++i
 				}
 				if (webrtcPeers && webrtcPeers.length === 0) {
@@ -390,8 +397,15 @@ export class WebrtcPeerPool {
 		if (type) {
 			//console.info('receive signal type: ' + type + ' from webrtcPeer: ' + peerId)
 		}
-		if(type === 'offer'){
-			await webrtcPeerPool.remove(peerId, connectPeerId, connectSessionId)
+		let clientId: string
+		if(type === 'offer' || type === 'answer'){
+			if(data.extension && data.extension.clientId){
+				clientId = data.extension.clientId
+			}
+			if(type === 'offer'){
+				await webrtcPeerPool.remove(peerId, connectPeerId, connectSessionId, clientId)
+			}
+
 		}
 		let router = data.router
 		let webrtcPeer: WebrtcPeer = null
@@ -413,6 +427,9 @@ export class WebrtcPeerPool {
 			webrtcPeer = new WebrtcPeer(peerId, iceServer, false, null, null)
 			webrtcPeer.connectPeerId = connectPeerId
 			webrtcPeer.connectSessionId = connectSessionId
+			if(clientId){
+			webrtcPeer.clientId = clientId	
+			}
 			let webrtcPeers: WebrtcPeer[] = []
 			webrtcPeers.push(webrtcPeer)
 			webrtcPeerPool.webrtcPeers.set(peerId, webrtcPeers)
@@ -447,10 +464,14 @@ export class WebrtcPeerPool {
 			//console.info('webrtcPeer:' + peerId + ' exist, connected:' + webrtcPeer.connected)
 		}
 		if (webrtcPeer) {
+			if(clientId){
+				webrtcPeer.clientId = clientId	
+			}
 			//console.info('webrtcPeer signal data:' + JSON.stringify(data))
 			webrtcPeer.signal(data)
 		}
 	}
+
 
 	/**
 	 * 向peer发送信息，如果是多个，遍历发送
