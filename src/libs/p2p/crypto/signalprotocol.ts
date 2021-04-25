@@ -3,6 +3,7 @@ import { signalProtocolStore } from './signalstore'
 import { messageSerializer } from '../chain/message'
 import { openpgp } from './openpgp'
 import { TypeUtil } from '../../util/util'
+import { logService } from '../db/log'
 
 /**
  * 特定目标的signal加密会话，
@@ -54,6 +55,8 @@ export class SignalSession {
 				plaintext = await this.sessionCipher.decryptPreKeyWhisperMessage(ciphertext.body!, 'binary')
 			} catch (e) {
 				console.log(e)
+				await logService.log(e, 'signalDecryptError', 'error')
+				
 			}
 		} else if (ciphertext.type === 1) {
 			// It is a WhisperMessage for an established session.

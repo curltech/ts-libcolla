@@ -1,6 +1,7 @@
 import { TypeUtil } from '../../util/util'
 import { config } from '../conf/conf'
 import { SignalAction } from '../chain/action/signal'
+import { logService } from '../db/log'
 
 const SimplePeer = require('simple-peer-curltech')
 
@@ -153,6 +154,7 @@ export class WebrtcPeer {
 
 		this._webrtcPeer.on('error', async (err) => {
 			console.log(new Date() + ':error:' + JSON.stringify(err))
+			await logService.log(err, 'webrtcPeerError', 'error')
 			// 重试的次数需要限制，超过则从池中删除
 			//this.init(this._targetPeerId, this._iceServer, null, this._options)
 			//await webrtcPeerPool.emitEvent('error', { error: err, source: this })
@@ -557,6 +559,7 @@ export class WebrtcPeerPool {
 			return result
 		} catch (err) {
 			console.error('signal err:' + err)
+			await logService.log(err, 'signalError', 'error')
 		}
 		return null
 	}
