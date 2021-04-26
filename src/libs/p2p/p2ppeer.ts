@@ -1,7 +1,7 @@
 // Libp2p Core
 import libp2p from 'libp2p'
 // Transports
-import websockets from 'libp2p-websockets'
+import websockets from 'libp2p-websockets-curltech'
 // Stream Muxer
 import mplex from 'libp2p-mplex'
 // Connection Encryption
@@ -42,7 +42,7 @@ export class P2pPeer {
    * 启动p2p节点，返回本节点对象
    * @param bootstrapAddrs 
    */
-  async start(bootstrapAddrs: string[]) {
+  async start(bootstrapAddrs: string[], opts) {
     if (this.host && this.host.isStarted() === true) {
       console.warn('p2pPeer has started! will restart')
       await this.stop()
@@ -118,11 +118,12 @@ export class P2pPeer {
           active: true           // You will attempt to dial destination peers if you are not connected to them
         },
       },
-      // transport: {
+      transport: {
+        WebSockets: opts.WebSockets
       //   [transportKey]: {
       //     wrtc // You can use `wrtc` when running in Node.js
       //   }
-      // }
+      },
       dht: {                        // The DHT options (and defaults) can be found in its documentation
         //   kBucketSize: 20,
         enabled: true,
@@ -379,6 +380,21 @@ export class P2pPeer {
     this.host.connectionManager.on('peer:disconnect', (connection: any) => {
       console.log('Disconnected from', connection.remotePeer.toB58String())
     })
+    this.host.on('error', (err) => {
+      console.error('p2pPeer error:' + err)
+    })
+    /*this.host.peerStore.on('peer', (peerId) => {
+      console.info('p2pPeer peerStore peer:' + peerId.toB58String())
+    })
+    this.host.peerStore.on('change:multiaddrs', ({ peerId, multiaddrs }) => {
+      console.info('p2pPeer peerStore change multiaddrs:' + peerId.toB58String() + ',' + multiaddrs)
+    })
+    this.host.peerStore.on('change:protocols', ({ peerId, protocols }) => {
+      console.info('p2pPeer peerStore change protocols:' + peerId.toB58String() + ',' + protocols)
+    })
+    this.host.addressManager.on('change:addresses', () => {
+      console.info('p2pPeer peerStore change addresses')
+    })*/
   }
 
   /**
@@ -458,14 +474,15 @@ export class P2pPeer {
   /**
    * const latency = await libp2p.ping(otherPeerId)
    */
-  async ping(peer: any): Promise<number> {
+  async ping(peer: any, timeoutInterval: number): Promise<number> {
     let latency = null
+    timeoutInterval = timeoutInterval ? timeoutInterval : 5000
     try {
       let p1 = this.host.ping(peer)
       let p2 = new Promise((resolve, reject) => {
         setTimeout(() => {
           reject('timeout')
-        }, 5000)
+        }, timeoutInterval)
       })
       latency = await Promise.race([p1, p2])
     } catch (err) {
