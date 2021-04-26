@@ -126,7 +126,7 @@ export class WebrtcPeer {
 		this._webrtcPeer.on('close', async () => {
 			console.info(new Date() + ':connected peer close: ' + this._targetPeerId + ';connectPeer:' + this._connectPeerId + ' session:' + this._connectSessionId + ', is closed')
 			await webrtcPeerPool.removeWebrtcPeer(this._targetPeerId, this)
-			await webrtcPeerPool.emitEvent('close', { source: this })
+			
 		})
 
 		/**
@@ -349,19 +349,34 @@ export class WebrtcPeerPool {
 			let webrtcPeers: WebrtcPeer[] = webrtcPeerPool.webrtcPeers.get(peerId)
 			if (webrtcPeers && webrtcPeers.length > 0) {
 				let i: number = 0
+				let _connected: boolean = false
 				for (let _webrtcPeer of webrtcPeers) {
-					if(_webrtcPeer === webrtcPeer)
-					 webrtcPeers.splice(i, 1)
+					if(_webrtcPeer === webrtcPeer){
+						console.log('emit removeWebrtcPeer self')
+						webrtcPeers.splice(i, 1)
+					}else{
+						console.log('emit removeWebrtcPeer other')
+						if(_webrtcPeer.connected){
+							_connected = true
+							console.log('emit removeWebrtcPeer other && connected')
+						}
+					}
 					++i
 				}
 				if (webrtcPeers && webrtcPeers.length === 0) {
 					webrtcPeerPool.webrtcPeers.delete(peerId)
+				}
+				if(!_connected){
+					await webrtcPeerPool.emitEvent('close', { source: webrtcPeer })
 				}
 			}
 			return true
 		} else {
 			return false
 		}
+
+
+		
 	}
 	/**
 	 * 获取连接已经建立的连接，可能是多个
