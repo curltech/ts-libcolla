@@ -241,13 +241,12 @@ export class WebrtcPeer {
 		if (this._webrtcPeer.connected) {
 			this._webrtcPeer.send(data)
 		} else {
-			console.error('peerId:' + this._targetPeerId + ';connectPeer:' + this._connectPeerId + ' session:' + this._connectSessionId + ' webrtc connection state is not connected')
+			console.log('send failed , peerId:' + this._targetPeerId + ';connectPeer:' + this._connectPeerId + ' session:' + this._connectSessionId + ' webrtc connection state is not connected')
 		}
 	}
 
 	async destroy(err: any) {
 		await this._webrtcPeer.destroy(err)
-		webrtcPeerPool.removeWebrtcPeer(this._targetPeerId,this)
 	}
 }
 
@@ -354,11 +353,12 @@ export class WebrtcPeerPool {
 					if(_webrtcPeer === webrtcPeer){
 						console.log('emit removeWebrtcPeer self')
 						webrtcPeers.splice(i, 1)
+						await webrtcPeer.destroy({})
 					}else{
-						console.log('emit removeWebrtcPeer other')
+						console.log('emit do not removeWebrtcPeer,because other')
 						if(_webrtcPeer.connected){
 							_connected = true
-							console.log('emit removeWebrtcPeer other && connected')
+							console.log('other && connected')
 						}
 					}
 					++i
@@ -411,10 +411,10 @@ export class WebrtcPeerPool {
 		})
 		return webrtcPeers
 	}
-	clear(){
+	async clear(){
 		let webrtcPeers = this.getAll()
 		for(let peer of webrtcPeers){
-			peer.destroy({})
+			await webrtcPeerPool.removeWebrtcPeer(peer.targetPeerId,peer)
 		}
 	}
 	/**
@@ -426,7 +426,7 @@ export class WebrtcPeerPool {
 	async receive(peerId: string, connectPeerId: string, connectSessionId: string, data: any) {
 		let type = data.type
 		if (type) {
-			//console.info('receive signal type: ' + type + ' from webrtcPeer: ' + peerId)
+			console.info('receive signal type: ' + type + ' from webrtcPeer: ' + peerId)
 		}
 		let clientId: string
 		if(type === 'offer' || type === 'answer'){

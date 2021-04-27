@@ -107,8 +107,7 @@ export class ChainMessageHandler {
 		try {
 			if (targetPeerId) {
 				let webrtcPeers: WebrtcPeer[] = webrtcPeerPool.getConnected(targetPeerId)
-				if (webrtcPeers && webrtcPeers.length > 0) {
-					console.info('targetPeerId:' + targetPeerId + ' has webrtc datachannel')
+				if (msg.MessageType === MsgType[MsgType.P2PCHAT] || (webrtcPeers && webrtcPeers.length > 0)) {
 					success = true
 					result = await webrtcPeerPool.send(targetPeerId, data)
 				}
