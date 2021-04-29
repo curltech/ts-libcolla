@@ -1,4 +1,4 @@
-import { TypeUtil } from '../../util/util'
+import { TypeUtil, CollaUtil } from '../../util/util'
 import { config } from '../conf/conf'
 import { SignalAction } from '../chain/action/signal'
 import { logService } from '../db/log'
@@ -92,7 +92,7 @@ export class WebrtcPeer {
 		if (options.stream) {
 			this._localStreams.push(options.stream)
 		}
-		options.extension = { iceServer : iceServer ,clientId : webrtcPeerPool.clientId }
+		options.extension = { iceServer : iceServer ,clientId : webrtcPeerPool.clientId , force : true }
 		this._options = options
 		// 自定义属性，表示本节点createOffer时加入的sfu的编号，作为出版者还是订阅者，还是都是
 		this._router = router
@@ -108,6 +108,11 @@ export class WebrtcPeer {
 			//console.info(new Date() + ':can signal to peer:' + this._targetPeerId + ';connectPeer:' + this._connectPeerId + ' session:' + this._connectSessionId)
 			if (this._router) {
 				data.router = this._router
+			}
+			if(this._webrtcPeer.extension.force){
+				data.extension = CollaUtil.deepClone(data.extension)
+				console.log('remove force')
+               delete this._webrtcPeer.extension.force
 			}
 			await webrtcPeerPool.emitEvent('signal', { data: data, source: this })
 		})
@@ -433,7 +438,8 @@ export class WebrtcPeerPool {
 			if(data.extension && data.extension.clientId){
 				clientId = data.extension.clientId
 			}
-			if(type === 'offer'){
+			if(type === 'offer' && data.extension.force){
+				console.log('hahhah')
 				await webrtcPeerPool.remove(peerId, clientId)
 			}
 
