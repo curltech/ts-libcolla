@@ -111,7 +111,6 @@ export class WebrtcPeer {
 			}
 			if(this._webrtcPeer.extension.force){
 				data.extension = CollaUtil.deepClone(data.extension)
-				console.log('remove force')
                delete this._webrtcPeer.extension.force
 			}
 			await webrtcPeerPool.emitEvent('signal', { data: data, source: this })
@@ -439,7 +438,6 @@ export class WebrtcPeerPool {
 				clientId = data.extension.clientId
 			}
 			if(type === 'offer' && data.extension.force){
-				console.log('hahhah')
 				await webrtcPeerPool.remove(peerId, clientId)
 			}
 
