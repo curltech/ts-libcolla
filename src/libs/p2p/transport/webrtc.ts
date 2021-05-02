@@ -61,8 +61,8 @@ export class Webrtc {
                 },
                 {
                     urls: 'turn:' + connectAddress + ':3478',
-                    username: 'wf',
-                    credential: 'wf123'
+                    username: 'guest',
+                    credential: 'guest'
                 }
             ]
         }

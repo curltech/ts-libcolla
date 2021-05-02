@@ -108,8 +108,8 @@ export class IceServer {
 					urls: 'stun:192.168.0.109:3478'
 				}, {
 					urls: 'turn:192.168.0.109:3478',
-					username: 'wf',
-					credential: 'wf123'
+					username: 'guest',
+					credential: 'guest'
 				}
 			]
 		}
@@ -122,8 +122,8 @@ export class IceServer {
 					urls: 'stun:120.79.254.124:3478'
 				}, {
 					urls: 'turn:120.79.254.124:3478',
-					username: 'wf',
-					credential: 'wf123'
+					username: 'guest',
+					credential: 'guest'
 				}
 			]
 		},
@@ -134,8 +134,8 @@ export class IceServer {
 					urls: 'stun::3478'
 				}, {
 					urls: 'turn::3478',
-					username: 'wf',
-					credential: 'wf123'
+					username: 'guest',
+					credential: 'guest'
 				}
 			]
 		},
@@ -146,8 +146,8 @@ export class IceServer {
 					urls: 'stun::3478'
 				}, {
 					urls: 'turn::3478',
-					username: 'wf',
-					credential: 'wf123'
+					username: 'guest',
+					credential: 'guest'
 				}
 			]
 		},
