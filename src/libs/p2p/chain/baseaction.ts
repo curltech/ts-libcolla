@@ -122,7 +122,9 @@ export abstract class BaseAction {
 					ObjectUtil.copy(responses[0], response)
 					let payloads = []
 					for (let res of responses) {
-						payloads.push(res.Payload)
+						if(res && res.Payload){
+                            payloads.push(res.Payload)
+						}
 					}
 					response.Payload = payloads
 

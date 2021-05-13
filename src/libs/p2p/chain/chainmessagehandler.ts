@@ -11,7 +11,8 @@ import { ionSfuClientPool } from '../transport/ionsfuclient'
 import { myself } from '../dht/myselfpeer'
 import { ObjectUtil } from '../../util/util'
 
-const packetSize=4*1024*1024
+const packetSize = 4*1024*1024
+const webRtcPacketSize = 128*1024
 
 /**
  * 原始消息的分派处理
@@ -302,8 +303,9 @@ export class ChainMessageHandler {
 	 * @param chainMessage 
 	 */
 	slice(chainMessage: ChainMessage): ChainMessage[] {
+		let _packSize = (chainMessage.MessageType !== MsgType[MsgType.P2PCHAT]) ? packetSize : webRtcPacketSize
 		if (chainMessage.NeedSlice !== true
-			|| chainMessage.TransportPayload.length <= packetSize) {
+			|| chainMessage.Payload.length <= _packSize) {
 			return [chainMessage]
 		}
 		/**
@@ -312,8 +314,8 @@ export class ChainMessageHandler {
 		if (chainMessage.SrcPeerId) {
 			return [chainMessage]
 		}
-		let transportPayload = chainMessage.TransportPayload
-		let sliceSize: number = chainMessage.TransportPayload.length / packetSize
+		let _payload = chainMessage.Payload
+		let sliceSize: number = chainMessage.Payload.length / _packSize
 		sliceSize = Math.ceil(sliceSize)
 		chainMessage.SliceSize = sliceSize
 		let slices: ChainMessage[] = []
@@ -323,14 +325,13 @@ export class ChainMessageHandler {
 			slice.SliceNumber = i
 			let slicePayload = null
 			if (i === sliceSize - 1) {
-				slicePayload = transportPayload.substr(i * packetSize, transportPayload.length)
+				slicePayload = _payload.substr(i * _packSize, _payload.length)
 			} else {
-				slicePayload = transportPayload.substring(i * packetSize, (i + 1) * packetSize)
+				slicePayload = _payload.substring(i * _packSize, (i + 1) * _packSize)
 			}
-			slice.TransportPayload = slicePayload
+			slice.Payload = slicePayload
 			slices.push(slice)
 		}
-
 		return slices
 	}
 
@@ -362,11 +363,15 @@ export class ChainMessageHandler {
 		let slices: ChainMessage[] = this.caches.get(uuid)
 		slices[chainMessage.SliceNumber] = chainMessage
 		if (slices.length === sliceSize) {
-			let transportPayload = null
+			let payload = null
 			for (let slice of slices) {
-				transportPayload = transportPayload + slice
+            	let _payload = slice.Payload
+                payload = payload ? payload + _payload : _payload
 			}
-			chainMessage.TransportPayload = transportPayload
+            console.log("merge")
+			console.log(chainMessage)
+            console.log(payload)
+			chainMessage.Payload = payload
 			this.caches.delete(uuid)
 
 			return chainMessage
