@@ -119,7 +119,7 @@ export class P2pPeer {
         },
       },
       transport: {
-        WebSockets: opts.WebSockets
+        WebSockets: opts ? opts.WebSockets : {}
       //   [transportKey]: {
       //     wrtc // You can use `wrtc` when running in Node.js
       //   }
