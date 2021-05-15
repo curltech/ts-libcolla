@@ -9,6 +9,9 @@ const uint8ArrayConcat = require('uint8arrays/concat')
 const uint8ArrayFromString = require('uint8arrays/from-string')
 const uint8ArrayToString = require('uint8arrays/to-string')
 
+/**
+ * ipfs的节点
+ */
 class IpfsNode {
 	private node: any
 	constructor() {

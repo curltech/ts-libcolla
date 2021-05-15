@@ -1,3 +1,4 @@
+import { TypeUtil } from '../../util/util'
 const IpfsHttpClient = require('ipfs-http-client')
 const all = require('it-all')
 const uint8ArrayConcat = require('uint8arrays/concat')
@@ -13,16 +14,16 @@ export class IpfsClientNode {
 	private peerId: string
 	private version: any
 	private topics = new Map<string, any>()
-	constructor(url: string) {
-		this.init(url)
+	constructor(options: any) {
+		this.init(options)
 	}
 
 	/**
-	 * 使用ipfs-http-client连接节点http://localhost:5001
+	 * 使用ipfs-http-client连接节点http://localhost:5001/api/v0
 	 * @param addr 
 	 */
-	async init(url: string) {
-		this.client = IpfsHttpClient(url)
+	async init(options: any) {
+		this.client = IpfsHttpClient(options)
 		const { id, agentVersion } = await this.client.id()
 		this.peerId = id
 		this.version = agentVersion
@@ -45,10 +46,16 @@ export class IpfsClientNode {
 	 */
 	async add(path: string, content: string): Promise<any> {
 		if (!this.client) throw new Error('Connect to a node first')
-		let fileAdded = await this.client.add({
-			path: path,
-			content: content
-		})
+		let fileAdded = null
+		if (content){
+			fileAdded = await this.client.add({
+				path: path,
+				content: content
+			})
+		} else {
+			const {urlSource} = IpfsHttpClient
+			fileAdded = await this.client.add(urlSource(path)) //('https://ipfs.io/images/ipfs-logo.svg'))
+		}
 		console.info('Added file:', fileAdded.path, fileAdded.cid)
 
 		return fileAdded
@@ -190,6 +197,24 @@ export class IpfsClientNode {
 export class IpfsClientNodePool {
 	private ipfsClientNodes = new Map<string, IpfsClientNode>()
 	constructor() {
+	}
+
+	create(options: any): IpfsClientNode {
+		let url=options
+		if (!TypeUtil.isString(options)) {
+			url = options.url
+		}
+		if (this.ipfsClientNodes.has(url)) {
+			this.ipfsClientNodes.delete(url)
+		}
+		let ipfsClientNode = new IpfsClientNode(options)
+		if (ipfsClientNode) {
+			this.ipfsClientNodes.set(url, ipfsClientNode)
+
+			return ipfsClientNode
+		}
+
+		return null
 	}
 
 	get(url: string): IpfsClientNode {

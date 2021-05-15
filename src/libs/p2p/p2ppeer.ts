@@ -42,7 +42,7 @@ export class P2pPeer {
    * 启动p2p节点，返回本节点对象
    * @param bootstrapAddrs 
    */
-  async start(bootstrapAddrs: string[], opts) {
+  async start(bootstrapAddrs: string[], opts= { WebSockets: { debug: false, timeoutInterval: 5000, binaryType: 'arraybuffer' }}) {
     if (this.host && this.host.isStarted() === true) {
       console.warn('p2pPeer has started! will restart')
       await this.stop()
