@@ -197,10 +197,13 @@ export class ChainMessageHandler {
 		securityParams.NeedCompress = chainMessage.NeedCompress
 		securityParams.NeedEncrypt = chainMessage.NeedEncrypt
 		let targetPeerId = chainMessage.TargetPeerId
+		let connectPeerId = chainMessage.ConnectPeerId
 		if (!targetPeerId) {
-			targetPeerId = chainMessage.ConnectPeerId
+			targetPeerId = connectPeerId
 		}
-		securityParams.TargetPeerId = targetPeerId
+		if (connectPeerId.indexOf(targetPeerId) === -1) {
+			securityParams.TargetPeerId = targetPeerId
+		}
 		let result: SecurityParams = await SecurityPayload.encrypt(payload, securityParams)
 		if (result) {
 			chainMessage.TransportPayload = result.TransportPayload
