@@ -43,6 +43,12 @@ export class WebrtcPeer {
 	set clientId(clientId: string) {
 		this._clientId = clientId
 	}
+	get localStreams() {
+		return this._localStreams
+	}
+	set localStreams(localStreams: any[]) {
+		this._localStreams = localStreams
+	}
 
 	/**
 	 * 初始化一个SimplePeer的配置参数
