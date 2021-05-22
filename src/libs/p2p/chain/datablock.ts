@@ -99,6 +99,8 @@ export class DataBlock extends StatusEntity {
 }
 
 export class BlockType {
+	// 聊天
+	static P2pChat = 'P2pChat'
 	// 聊天附件
 	static ChatAttach = 'ChatAttach'
 	// 收藏
