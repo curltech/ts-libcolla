@@ -10,7 +10,6 @@ export class P2pChatAction extends BaseAction {
 	}
 
 	async chat(connectPeerId: string, data: any, targetPeerId: string): Promise<any> {
-		data = JSON.stringify(data)
 		let chainMessage: ChainMessage = this.prepareSend(connectPeerId, data, targetPeerId)
 		// 已经使用signal protocol加密，不用再加密
 		//chainMessage.NeedEncrypt = true
@@ -26,9 +25,8 @@ export class P2pChatAction extends BaseAction {
 	receive(chainMessage: ChainMessage): ChainMessage {
 		chainMessage = super.receive(chainMessage)
 		if (chainMessage && p2pChatAction.receivers) {
-			let _payload = JSON.parse(chainMessage.Payload)
 			p2pChatAction.receivers.forEach(async (receiver, key) => {
-				await receiver(chainMessage.SrcPeerId, _payload)
+				await receiver(chainMessage.SrcPeerId, chainMessage.Payload)
 			})
 
 			return null
