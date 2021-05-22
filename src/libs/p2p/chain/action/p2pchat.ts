@@ -13,7 +13,7 @@ export class P2pChatAction extends BaseAction {
 		let chainMessage: ChainMessage = this.prepareSend(connectPeerId, data, targetPeerId)
 		// 已经使用signal protocol加密，不用再加密
 		//chainMessage.NeedEncrypt = true
-        chainMessage.NeedSlice = true
+        	//chainMessage.NeedSlice = true
 		let response: ChainMessage = await this.send(chainMessage)
 		if (response) {
 			return response.Payload
