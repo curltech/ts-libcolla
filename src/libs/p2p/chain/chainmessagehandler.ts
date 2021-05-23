@@ -10,6 +10,7 @@ import { libp2pClientPool } from '../transport/libp2p'
 import { ionSfuClientPool } from '../transport/ionsfuclient'
 import { myself } from '../dht/myselfpeer'
 import { ObjectUtil } from '../../util/util'
+import { PayloadType } from './baseaction'
 
 const packetSize = 4*1024*1024
 const webRtcPacketSize = 128*1024
@@ -98,8 +99,11 @@ export class ChainMessageHandler {
 		let topic: string = msg.Topic
 		let connectPeerId: string = msg.ConnectPeerId
 		let connectAddress: string = msg.ConnectAddress
-		await chainMessageHandler.encrypt(msg)
-		let data: Uint8Array = messageSerializer.marshal(msg)
+		let data: Uint8Array
+		if (msg.MessageType !== MsgType[MsgType.P2PCHAT]) {
+			await chainMessageHandler.encrypt(msg)
+			data = messageSerializer.marshal(msg)
+		}
 		/**
 		 * 发送数据后返回的响应数据
 		 */
@@ -108,20 +112,25 @@ export class ChainMessageHandler {
 		try {
 			if (targetPeerId) {
 				let webrtcPeers: WebrtcPeer[] = webrtcPeerPool.getConnected(targetPeerId)
-				if (msg.MessageType === MsgType[MsgType.P2PCHAT] || (webrtcPeers && webrtcPeers.length > 0)) {
+				if ((msg.MessageType !== MsgType[MsgType.P2PCHAT] || (msg.MessageType === MsgType[MsgType.P2PCHAT] && msg.Payload.payload.length <= webRtcPacketSize)) && (webrtcPeers && webrtcPeers.length > 0)) {
 					success = true
+					if (msg.MessageType === MsgType[MsgType.P2PCHAT]) {
+						msg.Payload = msg.Payload.payload
+						await chainMessageHandler.encrypt(msg)
+						data = messageSerializer.marshal(msg)
+					}
 					result = await webrtcPeerPool.send(targetPeerId, data)
 				}
 			}
 			if (success === false && connectPeerId) {
-				let webrtcPeers: WebrtcPeer[] = webrtcPeerPool.getConnected(connectPeerId)
-				if (webrtcPeers && webrtcPeers.length > 0) {
-					success = true
-					result = await webrtcPeerPool.send(connectPeerId, data)
-				} else {
-					success = true
-					result = await libp2pClientPool.send(connectPeerId, p2pPeer.chainProtocolId, data)
+				success = true
+				if (msg.MessageType === MsgType[MsgType.P2PCHAT]) {
+					msg.Payload.payload = null
+					msg.PayloadType = PayloadType.DataBlock
+					await chainMessageHandler.encrypt(msg)
+					data = messageSerializer.marshal(msg)
 				}
+				result = await libp2pClientPool.send(connectPeerId, p2pPeer.chainProtocolId, data)
 			}
 			if (success === false && connectAddress) {
 				if (connectAddress.startsWith('ws')) {

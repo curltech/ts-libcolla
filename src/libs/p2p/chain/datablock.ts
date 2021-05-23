@@ -402,7 +402,7 @@ export class DataBlockService extends BaseService {
 	 */
 	async decrypt(dataBlock: DataBlock, options = { verify: true }) {
 		let transactionKeys = dataBlock.transactionKeys
-		if (!transactionKeys) {
+		if (!transactionKeys && dataBlock.transportKey) {
 			let transportKey = openpgp.decodeBase64(dataBlock.transportKey)
 			if (transportKey) {
 				// Keys，验证签名
@@ -572,12 +572,16 @@ export class DataBlockService extends BaseService {
 			let data = []
 			// 循环不同的块号
 			for (let dataBlock of dataBlocks) {
-				let d = dataBlock.payload
-				if (d) {
-					d.blockId = dataBlock.blockId
-					d.sliceNumber = dataBlock.sliceNumber
-					d.sliceSize = dataBlock.sliceSize
-					data.push(d)
+				if (dataBlock.blockType === BlockType.P2pChat) {
+					data.push(dataBlock)
+				} else {
+					let d = dataBlock.payload
+					if (d) {
+						d.blockId = dataBlock.blockId
+						d.sliceNumber = dataBlock.sliceNumber
+						d.sliceSize = dataBlock.sliceSize
+						data.push(d)
+					}
 				}
 			}
 			return data
