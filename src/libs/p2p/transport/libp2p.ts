@@ -272,8 +272,6 @@ export class Libp2pClientPool {
 			libp2pClient = await this.create(connectPeerId, protocolId)
 		}
 		let syncPipe = await this.createStream(connectPeerId, protocolId)
-		console.log('syncPipe:' + connectPeerId + '-' + protocolId)
-		console.log(JSON.stringify(syncPipe))
 		let result = await libp2pClient.send(syncPipe, Buffer.from(data))
 
 		return result
