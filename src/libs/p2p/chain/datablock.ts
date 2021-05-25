@@ -210,13 +210,19 @@ export class DataBlockService extends BaseService {
 		if (!privateKey) {
 			throw new Error("NullPrivateKey")
 		}
-		// 在分片情况下设置数据签名
+		let signatureData: string
 		let transportPayload = dataBlock.transportPayload
-		// 设置数据的hash
-		let payloadHash = await openpgp.hash(transportPayload)
-		dataBlock.payloadHash = openpgp.encodeBase64(payloadHash)
+		if (transportPayload) {
+			// 设置数据的hash
+			let payloadHash = await openpgp.hash(transportPayload)
+			dataBlock.payloadHash = openpgp.encodeBase64(payloadHash)
+			signatureData = transportPayload
+		} else {
+			dataBlock.expireDate = new Date().getTime()
+			signatureData = dataBlock.expireDate + dataBlock.peerId
+		}
 		// 设置签名
-		let signature = await openpgp.sign(transportPayload, privateKey)
+		let signature = await openpgp.sign(signatureData, privateKey)
 		dataBlock.signature = signature
 	}
 
@@ -380,20 +386,21 @@ export class DataBlockService extends BaseService {
 		let transportPayload = dataBlock.transportPayload
 		if (!transportPayload) {
 			let payload = dataBlock.payload
-			if (!payload) {
-				throw new Error("NoPayload")
+			if (payload) {
+				transportPayload = messageSerializer.textMarshal(payload)
 			}
-			transportPayload = messageSerializer.textMarshal(payload)
 		}
-		let data: Uint8Array = openpgp.stringToUtf8Uint8Array(transportPayload)
-		// 压缩原始数据
-		data = openpgp.compress(data)
-		// 对数据进行对称加密
-		if (secretKey) {
-			data = await openpgp.aesEncrypt(data, secretKey)
+		if (transportPayload) {
+			let data: Uint8Array = openpgp.stringToUtf8Uint8Array(transportPayload)
+			// 压缩原始数据
+			data = openpgp.compress(data)
+			// 对数据进行对称加密
+			if (secretKey) {
+				data = await openpgp.aesEncrypt(data, secretKey)
+			}
+			// 最终的数据放入
+			dataBlock.transportPayload = openpgp.encodeBase64(data)
 		}
-		// 最终的数据放入
-		dataBlock.transportPayload = openpgp.encodeBase64(data)
 		dataBlock.payload = null // NOTE:上线前注释掉方便调试
 	}
 

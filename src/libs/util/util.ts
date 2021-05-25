@@ -526,6 +526,9 @@ export class CollaUtil {
 		return from
 	}
 	static asyncPool(poolLimit, array, iteratorFn) {
+		if (!poolLimit) {
+			poolLimit = 10
+		}
 		let i = 0;
 		const ret = [];// 用来存储所有的Promise任务
 		const executing = []; // 正在执行的Promise对象
