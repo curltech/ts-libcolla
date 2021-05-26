@@ -1,5 +1,6 @@
 import { ChainMessage, MsgType } from '../message'
-import { BaseAction } from '../baseaction'
+import {BaseAction, PayloadType} from '../baseaction'
+import {  dataBlockService } from '../datablock'
 
 /**
 在chain目录下的采用自定义protocol "/chain"的方式自己实现的功能
@@ -22,13 +23,21 @@ export class P2pChatAction extends BaseAction {
 		return null
 	}
 
-	receive(chainMessage: ChainMessage): ChainMessage {
+	async receive(chainMessage: ChainMessage): ChainMessage {
 		chainMessage = super.receive(chainMessage)
+		let srcPeerId:string = chainMessage.SrcPeerId
+		let payload:string
+        if(chainMessage.PayloadType === PayloadType.DataBlock){
+			let _dataBlock = chainMessage.Payload
+            await dataBlockService.decrypt(_dataBlock)
+            payload = _dataBlock.payload
+		}else{
+            payload = chainMessage.Payload
+		}
 		if (chainMessage && p2pChatAction.receivers) {
 			p2pChatAction.receivers.forEach(async (receiver, key) => {
-				await receiver(chainMessage.SrcPeerId, chainMessage.Payload)
+				await receiver(srcPeerId, payload)
 			})
-
 			return null
 		}
 	}
