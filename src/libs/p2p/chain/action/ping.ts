@@ -13,7 +13,7 @@ class PingAction extends BaseAction {
 
 	async ping(connectPeerId: string, data: any, targetPeerId: string): Promise<any> {
 		let chainMessage: ChainMessage = this.prepareSend(connectPeerId, data, targetPeerId)
-		chainMessage.NeedEncrypt = true
+		//chainMessage.NeedEncrypt = true
 
 		let response: ChainMessage = await this.send(chainMessage)
 		if (response) {
