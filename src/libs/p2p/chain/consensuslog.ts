@@ -2,6 +2,7 @@ import { BaseService, StatusEntity } from '../db/base'
 
 export class ConsensusLog extends StatusEntity {
 	public blockId!: string
+	public blockType!: string
     /**
 	 * 数据块的本条分片是交易负载的第几个分片，在没有分片前是1，分片后>=1，但是<=sliceSize
 	 */
