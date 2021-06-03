@@ -206,12 +206,12 @@ export class ChainMessageHandler {
 		securityParams.NeedCompress = chainMessage.NeedCompress
 		securityParams.NeedEncrypt = chainMessage.NeedEncrypt
 		let targetPeerId = chainMessage.TargetPeerId
-		let connectPeerId = chainMessage.ConnectPeerId
 		if (!targetPeerId) {
-			targetPeerId = connectPeerId
+			targetPeerId = chainMessage.ConnectPeerId
 		}
-		if (connectPeerId.indexOf(targetPeerId) === -1) {
-			securityParams.TargetPeerId = targetPeerId
+		securityParams.TargetPeerId = targetPeerId
+		if (chainMessage.ConnectPeerId.indexOf(targetPeerId) > -1 && securityParams.NeedEncrypt == true) {
+			console.error('ConnectPeerId equals TargetPeerId && NeedEncrypt is true!')
 		}
 		let result: SecurityParams = await SecurityPayload.encrypt(payload, securityParams)
 		if (result) {
