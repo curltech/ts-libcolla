@@ -3,7 +3,7 @@ import libp2p from 'libp2p'
 // Transports
 import websockets from 'libp2p-websockets-curltech'
 // Stream Muxer
-import mplex from 'libp2p-mplex'
+import mplex from 'libp2p-mplex-curltech'
 // Connection Encryption
 import { NOISE } from 'libp2p-noise'
 // Peer Discovery
