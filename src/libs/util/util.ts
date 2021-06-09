@@ -302,6 +302,16 @@ export class StringUtil {
 	static decodeURI(str) {
 		return decodeURIComponent(escape(str))
 	}
+	static getSize(str){
+        const arr = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+        let sizeUnit = 0;
+        let size = str.length * 2
+        while(size > 1024) {
+            size /= 1024;
+            ++sizeUnit;
+        }
+        return `${size.toFixed(2)}${arr[sizeUnit]}`;
+	}
 }
 
 const PhoneNumberFormat = LibPhoneNumber.PhoneNumberFormat;
