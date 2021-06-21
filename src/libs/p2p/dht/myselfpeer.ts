@@ -7,6 +7,7 @@ import { CollaUtil } from '../../util/util'
 import { config } from '../conf/conf'
 import * as cookie from 'tiny-cookie'
 import { openpgp } from '../crypto/openpgp'
+import { signalProtocol } from '../crypto/signalprotocol'
 
 const libp2pcrypto = require('libp2p-crypto')
 
@@ -203,6 +204,8 @@ export class MyselfPeerService extends BaseService {
         }
         myselfPeer.privateKey = await openpgp.export(privateKey, newPassword)
         myselfPeer.peerPrivateKey = await priv.export(newPassword, 'libp2p-key')
+        myselfPeer.signalPrivateKey = await signalProtocol.export(newPassword)
+        myselfPeer.signalPublicKey = await signalProtocol.exportPublic(myselfPeer.mobile)
         myselfPeer.updateDate = currentDate
       }
       myselfPeers = await this.update(myselfPeers)
@@ -211,6 +214,8 @@ export class MyselfPeerService extends BaseService {
           myself.myselfPeer = myselfPeer
           myself.myselfPeerClient.privateKey = myselfPeer.privateKey
           myself.myselfPeerClient.peerPrivateKey = myselfPeer.peerPrivateKey
+          myself.myselfPeerClient.signalPrivateKey = myselfPeer.signalPrivateKey
+          myself.myselfPeerClient.signalPublicKey = myselfPeer.signalPublicKey
           break
         }
       }
