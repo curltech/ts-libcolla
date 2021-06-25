@@ -303,7 +303,7 @@ export class StringUtil {
 		return decodeURIComponent(escape(str))
 	}
 	static getSize(str){
-        const arr = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+        const arr = ['B', 'KB', 'MB', 'GB', 'TB'];
         let sizeUnit = 0;
         let size = str.length * 2
         while(size > 1024) {
