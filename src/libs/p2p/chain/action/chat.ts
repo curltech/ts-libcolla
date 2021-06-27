@@ -7,6 +7,8 @@ export class ChatMessageType {
     static ADD_LINKMAN_INDIVIDUAL_RECEIPT = 'ADD_LINKMAN_INDIVIDUAL_RECEIPT' // 新增联系人请求接收回复
     static LOGOUT = 'LOGOUT'
     static CALL_CLOSE = 'CALL_CLOSE'
+	static BACKUP = 'BACKUP'
+	static RESTORE = 'RESTORE'
 }
 
 /**
