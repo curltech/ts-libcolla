@@ -355,7 +355,7 @@ export class MyselfPeerService extends BaseService {
   exportID(): string {
     let json = ''
     if (myself.myselfPeerClient) {
-      let peers = [myself.myselfPeerClient]
+      let peers = [CollaUtil.clone(myself.myselfPeerClient)]
       delete peers[0]._id
       delete peers[0]._rev
       delete peers[0].avatar
