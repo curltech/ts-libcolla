@@ -105,6 +105,8 @@ export class BlockType {
 	static ChatAttach = 'ChatAttach'
 	// 收藏
 	static Collection = 'Collection'
+	// 群文件
+	static GroupFile = 'GroupFile'
 }
 
 export class DataBlockService extends BaseService {
