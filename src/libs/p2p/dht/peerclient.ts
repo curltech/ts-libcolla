@@ -50,6 +50,52 @@ export class PeerClientService extends BaseService {
     return null
   }
 
+  getBestPeerClientFromCache(peerId: string): PeerClient {
+    let best = null
+    if (this.peerClients.has(peerId)) {
+      let peerClients = this.peerClients.get(peerId)
+      if (peerClients && peerClients.length > 0) {
+        for (let peerClient of peerClients) {
+          if (!best) {
+            best = peerClient
+          } else {
+            let pcLastUpdateTime = new Date(peerClient.lastUpdateTime).getTime()
+            let bestLastUpdateTime = new Date(best.LastUpdateTime).getTime()
+            let pcLastAccessTime = new Date(peerClient.lastAccessTime).getTime()
+            let bestLastAccessTime = new Date(best.lastAccessTime).getTime()
+            if (pcLastUpdateTime > bestLastUpdateTime ||
+              (pcLastUpdateTime === bestLastUpdateTime && pcLastAccessTime > bestLastAccessTime)) {
+              best = peerClient
+            }
+          }
+        }
+      }
+    }
+    return best
+  }
+
+  async getCachedBestPeerClient(peerId: string): Promise<PeerClient> {
+    let best = null
+    let peerClients = await this.getCachedPeerClient(peerId)
+    if (peerClients && peerClients.length > 0) {
+      for (let peerClient of peerClients) {
+        if (!best) {
+          best = peerClient
+        } else {
+          let pcLastUpdateTime = new Date(peerClient.lastUpdateTime).getTime()
+          let bestLastUpdateTime = new Date(best.LastUpdateTime).getTime()
+          let pcLastAccessTime = new Date(peerClient.lastAccessTime).getTime()
+          let bestLastAccessTime = new Date(best.lastAccessTime).getTime()
+          if (pcLastUpdateTime > bestLastUpdateTime ||
+            (pcLastUpdateTime === bestLastUpdateTime && pcLastAccessTime > bestLastAccessTime)) {
+            best = peerClient
+          }
+        }
+      }
+    }
+    return best
+  }
+
   /**
    * 依次从内存，本地数据库和网络获取PeerClient信息
    * @param connectPeerId 
@@ -60,16 +106,37 @@ export class PeerClientService extends BaseService {
       return this.peerClients.get(peerId)
     }
     let condi: any = { peerId: peerId, status: EntityStatus[EntityStatus.Effective] }
-    condi.activeStatus = ActiveStatus[ActiveStatus.Up]
+    //condi.activeStatus = ActiveStatus[ActiveStatus.Up]
     let peerClients: PeerClient[] = await this.find(condi, null, null, null, null)
     if (peerClients && peerClients.length > 0) {
       this.peerClients.set(peerId, peerClients)
-      if (peerClients[0].publicKey) {
-        let publicKey = await openpgp.import(peerClients[0].publicKey)
+      let best = null
+      for (let peerClient of peerClients) {
+        if (!best) {
+          best = peerClient
+        } else {
+          let pcLastUpdateTime = new Date(peerClient.lastUpdateTime).getTime()
+          let bestLastUpdateTime = new Date(best.LastUpdateTime).getTime()
+          let pcLastAccessTime = new Date(peerClient.lastAccessTime).getTime()
+          let bestLastAccessTime = new Date(best.lastAccessTime).getTime()
+          if (pcLastUpdateTime > bestLastUpdateTime ||
+            (pcLastUpdateTime === bestLastUpdateTime && pcLastAccessTime > bestLastAccessTime)) {
+            best = peerClient
+          }
+        }
+      }
+      if (best && best.publicKey) {
+        let publicKey = await openpgp.import(best.publicKey)
         if (publicKey) {
           this.publicKeys.set(peerId, publicKey)
         }
       }
+      /*if (peerClients[0].publicKey) {
+        let publicKey = await openpgp.import(peerClients[0].publicKey)
+        if (publicKey) {
+          this.publicKeys.set(peerId, publicKey)
+        }
+      }*/
 
       return peerClients
     }
@@ -246,7 +313,7 @@ export class PeerClientService extends BaseService {
    * @param activeStatus 
    */
   async putPeerClient(connectPeerId: string, activeStatus: string): Promise<any> {
-    //写自己的数据到peerendpoint中
+    // 写自己的数据到peerendpoint中
     let peerClient = await this.preparePeerClient(connectPeerId, activeStatus)
     console.info('putPeerClient:' + peerClient.peerId + ';connectPeerId:' + connectPeerId + ';activeStatus:' + activeStatus)
     let result = await putValueAction.putValue(connectPeerId, PayloadType.PeerClient, peerClient)
