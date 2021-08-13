@@ -38,22 +38,41 @@ export class PeerClient extends StatusEntity {
 }
 
 export class PeerClientService extends BaseService {
-  private peerClients = new Map<string, PeerClient[]>()
+  private peerClients = new Map<string, PeerClient>()
   private publicKeys = new Map<string, any>()
 
   async getPublic(peerId: string): Promise<any> {
-    let peerClients = await this.getCachedPeerClient(peerId)
-    if (peerClients && peerClients.length > 0) {
+    let peerClient = await this.getCachedPeerClient(peerId)
+    if (peerClient) {
       return this.publicKeys.get(peerId)
     }
 
     return null
   }
 
-  getBestPeerClientFromCache(peerId: string): PeerClient {
+  getPeerClientFromCache(peerId: string): PeerClient {
+    if (this.peerClients.has(peerId)) {
+      return this.peerClients.get(peerId)
+    }
+
+    return null
+  }
+
+  /**
+   * 依次从内存，本地数据库和网络获取PeerClient信息
+   * @param connectPeerId 
+   * @param peerId 
+   */
+  async getCachedPeerClient(peerId: string): Promise<PeerClient> {
     let best = null
     if (this.peerClients.has(peerId)) {
-      let peerClients = this.peerClients.get(peerId)
+      best = this.peerClients.get(peerId)
+    } else {
+      let condi: any = { peerId: peerId }
+      let peerClients: PeerClient[] = await this.find(condi, null, null, null, null)
+      if (!peerClients || peerClients.length === 0) {
+        peerClients = await this.getPeerClient(null, peerId, null)
+      }
       if (peerClients && peerClients.length > 0) {
         for (let peerClient of peerClients) {
           if (!best) {
@@ -69,83 +88,18 @@ export class PeerClientService extends BaseService {
             }
           }
         }
-      }
-    }
-    return best
-  }
-
-  async getCachedBestPeerClient(peerId: string): Promise<PeerClient> {
-    let best = null
-    let peerClients = await this.getCachedPeerClient(peerId)
-    if (peerClients && peerClients.length > 0) {
-      for (let peerClient of peerClients) {
-        if (!best) {
-          best = peerClient
-        } else {
-          let pcLastUpdateTime = new Date(peerClient.lastUpdateTime).getTime()
-          let bestLastUpdateTime = new Date(best.LastUpdateTime).getTime()
-          let pcLastAccessTime = new Date(peerClient.lastAccessTime).getTime()
-          let bestLastAccessTime = new Date(best.lastAccessTime).getTime()
-          if (pcLastUpdateTime > bestLastUpdateTime ||
-            (pcLastUpdateTime === bestLastUpdateTime && pcLastAccessTime > bestLastAccessTime)) {
-            best = peerClient
+        if (best) {
+          this.peerClients.set(peerId, best)
+          if (best.publicKey) {
+            let publicKey = await openpgp.import(best.publicKey)
+            if (publicKey) {
+              this.publicKeys.set(peerId, publicKey)
+            }
           }
         }
       }
     }
     return best
-  }
-
-  /**
-   * 依次从内存，本地数据库和网络获取PeerClient信息
-   * @param connectPeerId 
-   * @param peerId 
-   */
-  async getCachedPeerClient(peerId: string): Promise<PeerClient[]> {
-    if (this.peerClients.has(peerId)) {
-      return this.peerClients.get(peerId)
-    }
-    let condi: any = { peerId: peerId, status: EntityStatus[EntityStatus.Effective] }
-    //condi.activeStatus = ActiveStatus[ActiveStatus.Up]
-    let peerClients: PeerClient[] = await this.find(condi, null, null, null, null)
-    if (peerClients && peerClients.length > 0) {
-      this.peerClients.set(peerId, peerClients)
-      let best = null
-      for (let peerClient of peerClients) {
-        if (!best) {
-          best = peerClient
-        } else {
-          let pcLastUpdateTime = new Date(peerClient.lastUpdateTime).getTime()
-          let bestLastUpdateTime = new Date(best.LastUpdateTime).getTime()
-          let pcLastAccessTime = new Date(peerClient.lastAccessTime).getTime()
-          let bestLastAccessTime = new Date(best.lastAccessTime).getTime()
-          if (pcLastUpdateTime > bestLastUpdateTime ||
-            (pcLastUpdateTime === bestLastUpdateTime && pcLastAccessTime > bestLastAccessTime)) {
-            best = peerClient
-          }
-        }
-      }
-      if (best && best.publicKey) {
-        let publicKey = await openpgp.import(best.publicKey)
-        if (publicKey) {
-          this.publicKeys.set(peerId, publicKey)
-        }
-      }
-      /*if (peerClients[0].publicKey) {
-        let publicKey = await openpgp.import(peerClients[0].publicKey)
-        if (publicKey) {
-          this.publicKeys.set(peerId, publicKey)
-        }
-      }*/
-
-      return peerClients
-    }
-    peerClients = await this.getPeerClient(null, peerId, null)
-    if (peerClients && peerClients.length > 0) {
-      return peerClients
-    }
-
-    return null
   }
 
   /**
@@ -154,72 +108,51 @@ export class PeerClientService extends BaseService {
    * @param peerId 
    */
   async getPeerClient(connectPeerId: string, peerId: string, mobileNumber: string): Promise<PeerClient[]> {
+    let peerClients: PeerClient[] = null
     let pcs: any[] = await findClientAction.findClient(connectPeerId, peerId, mobileNumber)
-    console.log(pcs)
     if (pcs && pcs.length > 0) {
       console.log(pcs)
       let condi: any = { peerId: peerId }
-      let peerClients: PeerClient[] = await this.find(condi, null, null, null, null)
+     peerClients = await this.find(condi, null, null, null, null)
       if (peerClients && peerClients.length > 0) {
         await this.delete(peerClients)
       }
       peerClients = []
-      let best = null
       for (let pc of pcs) {
-        let peerClient = new PeerClient()
-        peerClient.peerId = pc.peerId
-        peerClient.name = pc.name
-        peerClient.mobile = pc.mobile
-        peerClient.mobileVerified = pc.mobileVerified
-        peerClient.visibilitySetting = pc.visibilitySetting
-        peerClient.lastAccessTime = pc.lastAccessTime
-        peerClient.lastUpdateTime = pc.lastUpdateTime
-        peerClient.createDate = pc.createDate
-        peerClient.updateDate = pc.updateDate
-        peerClient.connectPeerId = pc.connectPeerId
-        peerClient.clientId = pc.clientId
-        peerClient.clientDevice = pc.clientDevice
-        peerClient.clientType = pc.clientType
-        peerClient.connectSessionId = pc.connectSessionId
-        peerClient.avatar = pc.avatar
-        peerClient.peerPublicKey = pc.peerPublicKey
-        peerClient.publicKey = pc.publicKey
-        peerClient.status = pc.status
-        peerClient.statusReason = pc.statusReason
-        peerClient.statusDate = pc.statusDate
-        peerClient.activeStatus = pc.activeStatus
-        peerClients.push(peerClient)
-        await this.insert(peerClient)
-
-        if (!best) {
-          best = pc
-        } else {
-          let pcLastUpdateTime = new Date(pc.LastUpdateTime).getTime()
-          let bestLastUpdateTime = new Date(best.LastUpdateTime).getTime()
-          let pcLastAccessTime = new Date(pc.LastAccessTime).getTime()
-          let bestLastAccessTime = new Date(best.LastAccessTime).getTime()
-          if (pcLastUpdateTime > bestLastUpdateTime ||
-            (pcLastUpdateTime === bestLastUpdateTime && pcLastAccessTime > bestLastAccessTime)) {
-            best = pc
-          }
+        if (pc.status === EntityStatus[EntityStatus.Effective]) {
+          let peerClient = new PeerClient()
+          peerClient.peerId = pc.peerId
+          peerClient.name = pc.name
+          peerClient.mobile = pc.mobile
+          peerClient.mobileVerified = pc.mobileVerified
+          peerClient.visibilitySetting = pc.visibilitySetting
+          peerClient.lastAccessTime = pc.lastAccessTime
+          peerClient.lastUpdateTime = pc.lastUpdateTime
+          peerClient.createDate = pc.createDate
+          peerClient.updateDate = pc.updateDate
+          peerClient.connectPeerId = pc.connectPeerId
+          peerClient.clientId = pc.clientId
+          peerClient.clientDevice = pc.clientDevice
+          peerClient.clientType = pc.clientType
+          peerClient.connectSessionId = pc.connectSessionId
+          peerClient.avatar = pc.avatar
+          peerClient.peerPublicKey = pc.peerPublicKey
+          peerClient.publicKey = pc.publicKey
+          peerClient.status = pc.status
+          peerClient.statusReason = pc.statusReason
+          peerClient.statusDate = pc.statusDate
+          peerClient.activeStatus = pc.activeStatus
+          peerClients.push(peerClient)
         }
       }
-      this.peerClients.set(peerId, peerClients)
-      if (best && best.publicKey) {
-        let publicKey = await openpgp.import(best.publicKey)
-        if (publicKey) {
-          this.publicKeys.set(peerId, publicKey)
-        }
-      }
-      return peerClients
+      peerClients = await this.insert(peerClients)
     }
-    return null
+    return peerClients
   }
 
   async findPeerClient(connectPeerId: string, peerId: string, mobileNumber: string): Promise<PeerClient> {
-    let peerClients = await this.getPeerClient(connectPeerId, peerId, mobileNumber)
-    console.log(peerClients)
     let best = null
+    let peerClients = await this.getPeerClient(connectPeerId, peerId, mobileNumber)
     if (peerClients && peerClients.length > 0) {
       for (let peerClient of peerClients) {
         if (!best) {
@@ -233,6 +166,15 @@ export class PeerClientService extends BaseService {
             (pcLastUpdateTime === bestLastUpdateTime && pcLastAccessTime > bestLastAccessTime)) {
             best = peerClient
           }
+        }
+      }
+    }
+    if (best) {
+      this.peerClients.set(peerId, best)
+      if (best.publicKey) {
+        let publicKey = await openpgp.import(best.publicKey)
+        if (publicKey) {
+          this.publicKeys.set(peerId, publicKey)
         }
       }
     }
