@@ -119,8 +119,8 @@ export class Websocket {
             }
         }
     }
-    send(message: string | Uint8Array) {
-        this.websocket.send(message)
+    async send(message: string | Uint8Array) {
+        return await this.websocket.send(message)
     }
 
     get status(): boolean {
