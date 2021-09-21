@@ -49,8 +49,8 @@ export class HttpClient {
 			})
 	}
 
-	send(url: string, data: any) {
-		this._client.post(url, data)
+	async send(url: string, data: any) {
+		return await this._client.post(url, data)
 	}
 
 	async get(url: string) {
