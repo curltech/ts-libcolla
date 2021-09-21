@@ -75,6 +75,9 @@ export class DataBlock extends StatusEntity {
 	public previousBlockHash!: string
 	// 共识可能会引入的一些可选的元数据
 	public metadata!: string
+	public name: string
+	public description: string
+	public thumbnail: string
 	public mimeType!: string
 	public transactionKeys!: TransactionKey[]
 	/**
@@ -107,6 +110,10 @@ export class BlockType {
 	static Collection = 'Collection'
 	// 群文件
 	static GroupFile = 'GroupFile'
+	// 频道
+	static Channel = 'Channel'
+	// 频道文章
+	static ChannelArticle = 'ChannelArticle'
 }
 
 export class DataBlockService extends BaseService {
@@ -119,6 +126,9 @@ export class DataBlockService extends BaseService {
 		if (payload) {
 			dataBlock.payload = payload.payload
 			dataBlock.metadata = payload.metadata
+			dataBlock.thumbnail = payload.thumbnail
+			dataBlock.name = payload.name
+			dataBlock.description = payload.description
 			dataBlock.expireDate = payload.expireDate
 			dataBlock.mimeType = payload.mimeType
 		}
