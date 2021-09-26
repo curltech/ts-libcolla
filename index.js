@@ -8,11 +8,12 @@ import { p2pPeer } from './src/libs/p2p/p2ppeer'
 import { BaseAction, PayloadType } from './src/libs/p2p/chain/baseaction'
 import { ChatMessageType, chatAction } from './src/libs/p2p/chain/action/chat'
 import { p2pChatAction } from './src/libs/p2p/chain/action/p2pchat'
-import { SignalAction, signalAction } from './src/libs/p2p/chain/action/signal'
-import { IonSignalAction, ionSignalAction } from './src/libs/p2p/chain/action/ionsignal'
+import { signalAction } from './src/libs/p2p/chain/action/signal'
+import { ionSignalAction } from './src/libs/p2p/chain/action/ionsignal'
 import { pingAction } from './src/libs/p2p/chain/action/ping'
 import { findClientAction } from './src/libs/p2p/chain/action/findclient'
 import { consensusAction } from './src/libs/p2p/chain/action/consensus'
+import { putValueAction } from './src/libs/p2p/chain/action/putvalue'
 import { queryPeerTransAction } from './src/libs/p2p/chain/action/querypeertrans'
 import { queryValueAction } from './src/libs/p2p/chain/action/queryvalue'
 import { openpgp } from './src/libs/p2p/crypto/openpgp'
@@ -50,7 +51,7 @@ export {
   ConsensusLog, consensusLogService, Log, logService,
   PeerEndpoint, peerEndpointService, chainAppService, ChainApp,
   p2pPeer, connectPeerId, connectAddress, iceServer, Language, PeerMode, routerMenu, ClientDevice,
-  BaseAction, PayloadType, SignalAction, ChatMessageType, chatAction, p2pChatAction, pingAction, IonSignalAction, ionSignalAction, signalAction, findClientAction, consensusAction, queryPeerTransAction, queryValueAction,
+  BaseAction, PayloadType, ChatMessageType, signalAction, ionSignalAction, chatAction, p2pChatAction, pingAction, findClientAction, consensusAction, connectAction, getValueAction, putValueAction, queryPeerTransAction, queryValueAction,
   openpgp, SecurityParams, SecurityPayload, signalProtocol, HttpClient, httpClientPool, Libp2pClient, libp2pClientPool,
   Websocket, websocketPool, WebrtcPeer, webrtcPeerPool, webrtcEncrypt, IonSfuSignal, ionSfuClientPool, IonSfuClient,
   // util
