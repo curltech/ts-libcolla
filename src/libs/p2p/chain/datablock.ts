@@ -12,6 +12,7 @@ const SliceLimit = 1024 * 1024 * 1024
 
 export class DataBlock extends StatusEntity {
 	public blockId!: string
+	public parentBusinessNumber!: string
 	public businessNumber!: string
 	public blockType!: string
 	/**
@@ -117,9 +118,10 @@ export class BlockType {
 }
 
 export class DataBlockService extends BaseService {
-	static create(blockId: string, businessNumber: string, blockType: string, createTimestamp: number, payload: any, peers: PeerClient[]): DataBlock {
+	static create(blockId: string, parentBusinessNumber: string, businessNumber: string, blockType: string, createTimestamp: number, payload: any, peers: PeerClient[]): DataBlock {
 		let dataBlock = new DataBlock()
 		dataBlock.blockId = blockId
+		dataBlock.parentBusinessNumber = parentBusinessNumber
 		dataBlock.businessNumber = businessNumber
 		dataBlock.blockType = blockType
 		dataBlock.createTimestamp = createTimestamp
