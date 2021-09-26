@@ -104,6 +104,7 @@ export class WebrtcPeer {
 		this._router = router
 		this._start = Date.now()
 		this._webrtcPeer = new SimplePeer(options)
+
 		/**
 		 * 下面的三个事件对于发起方和被发起方是一样的
 		 */
@@ -119,6 +120,19 @@ export class WebrtcPeer {
 				data.extension = CollaUtil.deepClone(data.extension)
                delete this._webrtcPeer.extension.force
 			}
+			let _that = this
+			this._webrtcPeer._pc.getStats((err, items) => {
+				if(items && items.length > 0){
+					items.forEach(item => {
+							if (
+								(item.type === 'googCandidatePair' && item.googActiveConnection === 'true') ||
+								((item.type === 'candidatepair' || item.type === 'candidate-pair') && item.selected)
+							  ) {
+								_that._webrtcPeer._maybeReady()
+							  }
+						  })
+				}
+			})
 			await webrtcPeerPool.emitEvent('signal', { data: data, source: this })
 		})
 
