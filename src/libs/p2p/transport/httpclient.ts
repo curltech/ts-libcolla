@@ -51,12 +51,12 @@ export class HttpClient {
             })
     }
 
-    async send(url: string, data: any) {
-        return await this._client.post(url, data)
+    send(url: string, data: any) {
+        return this._client.post(url, data)
     }
 
-    async get(url: string) {
-        return await this._client.get(url)
+    get(url: string) {
+        return this._client.get(url)
     }
 }
 
@@ -103,7 +103,7 @@ export class HttpClientPool {
             this.httpClients.set(address, httpClient)
         }
 
-		this._httpClient = httpClient
+        this._httpClient = httpClient
     }
 }
 
