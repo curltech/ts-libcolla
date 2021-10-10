@@ -1,6 +1,6 @@
 {
   "name": "libcolla",
-  "version": "0.0.59",
+  "version": "0.0.61",
   "description": "libcolla",
   "productName": "libcolla",
   "leadMaintainer": "hujs888 <hujs@colla.cc>",
@@ -60,7 +60,7 @@
     "libp2p-gossipsub": "^0.8.0",
     "libp2p-kad-dht": "^0.21.0",
     "libp2p-mplex-curltech": "^0.10.3",
-    "libp2p-noise": "^2.0.5",
+    "@chainsafe/libp2p-noise": "^4.0.0",
     "libp2p-websockets-curltech": "^0.15.6",
     "openpgp4curltech": "^5.0.0-1",
     "peer-id": "^0.14.2",

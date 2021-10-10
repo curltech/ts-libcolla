@@ -5,7 +5,7 @@ import websockets from 'libp2p-websockets-curltech'
 // Stream Muxer
 import mplex from 'libp2p-mplex-curltech'
 // Connection Encryption
-import { NOISE } from 'libp2p-noise'
+import { NOISE, Noise } from '@chainsafe/libp2p-noise'
 // Peer Discovery
 import bootstrap from 'libp2p-bootstrap'
 import kaddht from 'libp2p-kad-dht'
@@ -53,10 +53,12 @@ export class P2pPeer {
     let addresses = {
       listen: config.libp2pParams.addrs
     }
+    // custom noise configuration, pass it instead of NOISE instance
+    //const noise = new Noise(privateKey, Buffer.alloc(x))
     let modules = {
       transport: [websockets],
       streamMuxer: [mplex],
-      connEncryption: [NOISE],
+      connEncryption: [NOISE], // or above custom noise
       peerDiscovery: [bootstrap],
       dht: kaddht,
       pubsub: gossipsub
