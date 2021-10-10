@@ -2,6 +2,7 @@ import ReconnectingWebSocket from 'reconnectingwebsocket'
 import { TypeUtil, BlobUtil } from '../../util/util'
 import { chainMessageHandler } from '../chain/chainmessagehandler'
 import { config } from '../conf/conf'
+import {HttpClient} from "./httpclient";
 
 export class Websocket {
     private prefix: string = 'wss://'
@@ -41,8 +42,10 @@ export class Websocket {
             this.websocket = new ReconnectingWebSocket(this.prefix + this.address, null,
                 { debug: false, reconnectInterval: 3000, maxReconnectAttempts: 5, timeoutInterval: 5000 });
         } else if ('MozWebSocket' in window) {
+            // @ts-ignore
             this.websocket = new MozWebSocket(this.prefix + this.address)
         } else {
+            // @ts-ignore
             this.websocket = new SockJS(this.address)
         }
         let _that = this
@@ -130,6 +133,7 @@ export class Websocket {
 
 export class WebsocketPool {
     private websockets = new Map<string, Websocket>()
+    private _websocket:Websocket=null
     constructor() {
         let connectAddress = config.appParams.connectAddress
         if (connectAddress && TypeUtil.isArray(connectAddress)) {
@@ -137,6 +141,9 @@ export class WebsocketPool {
                 if (addr.startsWith('ws')) {
                     let websocket = new Websocket(addr)
                     this.websockets.set(addr, websocket)
+                    if (this._websocket === null) {
+                        this._websocket = websocket
+                    }
                 }
             }
         }
@@ -160,6 +167,21 @@ export class WebsocketPool {
             websocket.close()
             this.websockets.delete(address)
         }
+    }
+
+    get websocket(): Websocket {
+        return this._websocket
+    }
+
+    setWebsocket(address: string) {
+        let websocket = null
+        if (this.websockets.has(address)) {
+            websocket = this.websockets.get(address)
+        } else {
+            websocket = new Websocket(address)
+            this.websockets.set(address, websocket)
+        }
+        this._websocket = websocket
     }
 }
 export let websocketPool = new WebsocketPool()
