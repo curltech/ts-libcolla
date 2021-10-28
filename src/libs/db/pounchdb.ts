@@ -94,6 +94,7 @@ export class PounchDb extends DataStore {
 	async drop(tableName: string) {
 		let ds = this.db[tableName]
 		if (ds) {
+			delete this.db[tableName]
 			return await ds.destroy()
 		}
 
@@ -555,7 +556,7 @@ export class PounchDb extends DataStore {
 	}
 
 	async test() {
-		this.create('test_table', [], ['data'])
+		await this.create('test_table', [], ['data'])
 		let entity = await this.insert('test_table', { data: 'the package manager for JavaScript. Contribute to npm/cli development by creating an account on GitHub', data_num: 1234561 })
 		await this.insert('test_table', { data: '它可以直接在浏览器上运行，不依赖24服务端来完成对网页上纯文本的搜索功能', data_num: 1234562 })
 		//this.buildIndex('test_table', ['data'])
