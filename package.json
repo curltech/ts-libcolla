@@ -55,6 +55,7 @@
     "google-libphonenumber": "^3.2.13",
     "ion-sdk-js": "^1.5.4",
     "ipfs-http-client": "^49.0.2",
+    "js-lru": "^1.0.0",
     "libp2p": "^0.30.9",
     "libp2p-bootstrap": "^0.12.2",
     "libp2p-gossipsub": "^0.8.0",

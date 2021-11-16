@@ -1,7 +1,7 @@
 import { ChainMessage, MsgType } from '../message'
 import { BaseAction } from '../baseaction'
 import { chainMessageHandler } from '../chainmessagehandler'
-import { webrtcPool } from '../../transport/webrtc'
+import { webrtcPool } from '../../transport/webrtc_base'
 import { config } from '../../conf/conf'
 
 /**

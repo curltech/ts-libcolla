@@ -1,7 +1,7 @@
 import { ChainMessage, MsgType } from '../message'
 import { BaseAction } from '../baseaction'
 import { chainMessageHandler } from '../chainmessagehandler'
-import { webrtcPool } from '../../transport/webrtc'
+import { webrtcPool } from '../../transport/webrtc_base'
 
 /**
 在chain目录下的采用自定义protocol "/chain"的方式自己实现的功能

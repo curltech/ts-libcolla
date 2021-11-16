@@ -1,6 +1,6 @@
 import { ChainMessage, MsgType } from '../message'
 import { BaseAction } from '../baseaction'
-import { webrtcPeerPool } from '../../transport/webrtc-peer'
+import { webrtcPeerPool } from '../../transport/webrtcpeerpool'
 
 /**
 在chain目录下的采用自定义protocol "/chain"的方式自己实现的功能

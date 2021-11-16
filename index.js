@@ -36,7 +36,8 @@ import { connectPeerId, connectAddress, iceServer, Language, PeerMode, routerMen
 import { HttpClient, httpClientPool } from './src/libs/p2p/transport/httpclient'
 import { Libp2pClient, libp2pClientPool } from './src/libs/p2p/transport/libp2p'
 import { Websocket, websocketPool } from './src/libs/p2p/transport/websocket'
-import { webrtcPeerPool, WebrtcPeer } from './src/libs/p2p/transport/webrtc-peer'
+import { WebrtcPeer } from './src/libs/p2p/transport/webrtc-peer'
+import { webrtcPeerPool } from './src/libs/p2p/transport/webrtcpeerpool'
 import { webrtcEncrypt } from './src/libs/p2p/transport/webrtc-encrypt'
 import { IonSfuSignal, ionSfuClientPool, IonSfuClient } from './src/libs/p2p/transport/ionsfuclient'
 
