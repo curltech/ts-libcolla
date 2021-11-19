@@ -7,11 +7,11 @@ import {LRUCache} from 'js-lru'
 /**
  * webrtc的连接池，键值是对方的peerId
  */
-export class WebrtcPeerPool {
+ export class WebrtcPeerPool {
 	public peerId : string
 	public peerPublicKey : string
 	public clientId : string
-	private webrtcPeers = new LRUCache(100);
+	private webrtcPeers = new LRUCache(100)
 	private _events: Map<string, any> = new Map<string, any>()
 	private _signalAction: SignalAction = null
 	private protocolHandlers = new Map()
@@ -66,23 +66,18 @@ export class WebrtcPeerPool {
 	async create(peerId: string, options:any, router: any): Promise<WebrtcPeer> {
 		let webrtcPeers: WebrtcPeer[] = null
 		if (webrtcPeerPool.webrtcPeers.find(peerId)) {
-			webrtcPeers = webrtcPeerPool.webrtcPeers.get(peerId)
+			webrtcPeers = webrtcPeerPool.webrtcPeers[peerId]
 		}
-		if (!options) {
-			options = {}
-		}
-		let  iceServer:any
-		if (!options.config || !options.config.iceServers) {
-			options.config["iceServers"] = iceServer
-		}
-		let webrtcPeer = new WebrtcPeer(peerId, true, options, router)
+		let webrtcPeer = new WebrtcPeer(peerId, null, true, options, router)
 		if (!webrtcPeers) {
 			webrtcPeers = []
-			webrtcPeerPool.webrtcPeers.put(peerId, webrtcPeers)
 		}
 		webrtcPeers.push(webrtcPeer)
+		webrtcPeerPool.webrtcPeers.put(peerId, webrtcPeers)
+
 		return webrtcPeer
 	}
+
 	async remove(peerId: string, clientId: string): Promise<boolean> {
 		if (webrtcPeerPool.webrtcPeers.find(peerId)) {
 			let webrtcPeers: WebrtcPeer[] = webrtcPeerPool.webrtcPeers.get(peerId)
@@ -90,11 +85,11 @@ export class WebrtcPeerPool {
 				let i: number = 0
 				for (let webrtcPeer of webrtcPeers) {
 					if(!webrtcPeer.clientId || clientId === webrtcPeer.clientId)
-					webrtcPeers.splice(i, 1)
+					 webrtcPeers.splice(i, 1)
 					++i
 				}
 				if (webrtcPeers && webrtcPeers.length === 0) {
-					webrtcPeerPool.webrtcPeers.delete(peerId)
+					webrtcPeerPool.webrtcPeers.remove(peerId)
 				}
 			}
 			return true
@@ -123,7 +118,7 @@ export class WebrtcPeerPool {
 					++i
 				}
 				if (webrtcPeers && webrtcPeers.length === 0) {
-					webrtcPeerPool.webrtcPeers.delete(peerId)
+					webrtcPeerPool.webrtcPeers.remove(peerId)
 				}
 				if(!_connected){
 					await webrtcPeerPool.emitEvent('close', { source: webrtcPeer })
@@ -187,30 +182,19 @@ export class WebrtcPeerPool {
 			console.info('receive signal type: ' + type + ' from webrtcPeer: ' + peerId)
 		}
 		let clientId: string
-		if(data.extension && data.extension.clientId){
-			clientId = data.extension.clientId
-		}
-		if(type === 'offer' && data.extension && data.extension.force){
-			await webrtcPeerPool.remove(peerId, clientId)
-		}
+		if(type === 'offer' || type === 'answer'){
+			if(data.extension && data.extension.clientId){
+				clientId = data.extension.clientId
+			}
+			if(type === 'offer' && data.extension.force){
+				await webrtcPeerPool.remove(peerId, clientId)
+			}
 
+		}
 		let router = data.router
 		let webrtcPeer: WebrtcPeer = null
-		let webrtcPeers: WebrtcPeer[] = webrtcPeerPool.webrtcPeers.get(peerId)
-		if (webrtcPeers && webrtcPeers.length > 0) {
-			for (let _webrtcPeer of webrtcPeers) {
-				// 如果连接没有完成
-				if (_webrtcPeer.clientId === clientId) {
-					webrtcPeer = _webrtcPeer
-					break
-				}
-				if(!_webrtcPeer.clientId && type === 'answer' ){//offer发出方new时无法获得对方的clientId，收到answer时回写
-					webrtcPeer = _webrtcPeer
-					_webrtcPeer.clientId = clientId
-				}
-			}
-		}
-		if(type =="offer" && !webrtcPeer){
+		// peerId的连接不存在，被动方创建WebrtcPeer，被动创建WebrtcPeer
+		if (!webrtcPeerPool.webrtcPeers.find(peerId)) {
 			console.info('webrtcPeer:' + peerId + ' not exist, will create receiver')
 			let iceServer = null
 			if(data.extension && data.extension.iceServer){
@@ -224,22 +208,45 @@ export class WebrtcPeerPool {
 				}
 				iceServer = data.extension.iceServer
 			}
-			let options:any = {}
-			options.config = {}
-			options.config.iceServers = iceServer
-			webrtcPeer = new WebrtcPeer(peerId, false, options, null)
+			webrtcPeer = new WebrtcPeer(peerId, iceServer, false, null, null)
 			webrtcPeer.connectPeerId = connectPeerId
 			webrtcPeer.connectSessionId = connectSessionId
 			if(clientId){
 			webrtcPeer.clientId = clientId	
 			}
-			if(!webrtcPeers){
-				webrtcPeers = []
-				webrtcPeerPool.webrtcPeers.put(peerId, webrtcPeers)
-			}
+			let webrtcPeers: WebrtcPeer[] = []
 			webrtcPeers.push(webrtcPeer)
+			webrtcPeerPool.webrtcPeers.put(peerId, webrtcPeers)
+		} else {// peerId的连接存在
+			let webrtcPeers: WebrtcPeer[] = webrtcPeerPool.webrtcPeers.get(peerId)
+			if (webrtcPeers && webrtcPeers.length > 0) {
+				let found: boolean = false
+				for (webrtcPeer of webrtcPeers) {
+					// 如果连接没有完成
+					if (!webrtcPeer.connectPeerId) {
+						webrtcPeer.connectPeerId = connectPeerId
+						webrtcPeer.connectSessionId = connectSessionId
+						found = true
+						break
+					} else if (webrtcPeer.connectPeerId === connectPeerId
+						&& webrtcPeer.connectSessionId === connectSessionId) {
+						found = true
+						break
+					}
+				}
+				// 没有匹配的连接被发现，说明有多个客户端实例回应，这时创建新的主动连接请求，尝试建立新的连接
+				// if (found === false) {
+				// 	console.info('match webrtcPeer:' + peerId + ' not exist, will create sender')
+				// 	webrtcPeer = new WebrtcPeer(peerId, null, true, null, router)
+				// 	webrtcPeer.connectPeerId = connectPeerId
+				// 	webrtcPeer.connectSessionId = connectSessionId
+				// 	webrtcPeers.push(webrtcPeer)
+				// 	webrtcPeer = null
+				// }
+			}
+			console.info('webrtcPeer:' + peerId + ' exist, connected:')
+			//console.info('webrtcPeer:' + peerId + ' exist, connected:' + webrtcPeer.connected)
 		}
-		
 		if (webrtcPeer) {
 			if(clientId){
 				webrtcPeer.clientId = clientId	

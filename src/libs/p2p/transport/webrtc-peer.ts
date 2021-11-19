@@ -1,7 +1,7 @@
 import { CollaUtil } from '../../util/util'
 import { logService } from '../db/log'
 import { webrtcPeerPool } from './webrtcpeerpool'
-
+import { config } from '../conf/conf'
 const SimplePeer = require('simple-peer-curltech')
 
 export class WebrtcPeer {
@@ -68,51 +68,40 @@ export class WebrtcPeer {
 	}
 	 */
 
-	constructor(targetPeerId: string, 
+	constructor(targetPeerId: string, iceServer: [],
 		initiator: boolean, options: any, router: any) {
-		this.init(targetPeerId, initiator, options, router)
+		this.init(targetPeerId, iceServer, initiator, options, router)
 	}
 
-	init(targetPeerId: string, 
+	init(targetPeerId: string, iceServer: [],
 		initiator: boolean, options: any, router: any) {
 		this._targetPeerId = targetPeerId
+		if (!iceServer) {
+			iceServer = config.appParams.iceServer[0]
+		}
+		this._iceServer = iceServer
 		if (!options) {
 			options = {}
 		}
-		console.log(options)
-		let  iceServer:any
-		// if (!options.config || !options.config.iceServers) {
-		// 	iceServer = config.appParams.iceServer[0]
-		// 	options.config["iceServers"] = iceServer
-		// }else{
-			iceServer = options.config.iceServers
-		//}
-		this._iceServer = iceServer
+		if (!options.config) {
+			options.config = {
+				"iceServers": iceServer
+			}
+		}
+		if (!options.config["iceServers"]) {
+			options.config["iceServers"] = iceServer
+		}
 		if (initiator) {
 			options.initiator = initiator
 		}
 		if (options.stream) {
 			this._localStreams.push(options.stream)
 		}
-		
-		
-		if(targetPeerId ==="12D3KooWLVFzm9iUdqL2DBLH7ND459CuZmnQEoHf1Ebm4zbJgg6t"){//模拟多客户端发送方
-			console.log("targetPeerId 12D3KooWLVFzm9iUdqL2DBLH7ND459CuZmnQEoHf1Ebm4zbJgg6t")
-			window.clientId = window.clientId?(window.clientId+1 ): 1
-			console.log(window.clientId )
-			this.clientId = window.clientId 
-			options.extension = { iceServer : iceServer ,clientId : window.clientId, force : true }
-		}else if(targetPeerId ==="12D3KooWQ1tzMkwc4ciUdW6NCgsHqa6CuvNXXpwKLLyt2gyaKkGm"){
-			options.extension = { iceServer : iceServer ,clientId : window.clientId, force : true }
-		}else{
-			options.extension = { iceServer : iceServer ,clientId : webrtcPeerPool.clientId , force : true }
-		}
-		
+		options.extension = { iceServer : iceServer ,clientId : webrtcPeerPool.clientId , force : true }
 		this._options = options
 		// 自定义属性，表示本节点createOffer时加入的sfu的编号，作为出版者还是订阅者，还是都是
 		this._router = router
 		this._start = Date.now()
-		debugger
 		this._webrtcPeer = new SimplePeer(options)
 
 		/**
