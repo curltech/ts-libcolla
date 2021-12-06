@@ -8,6 +8,7 @@ export class PeerProfile extends StatusEntity {
   public clientId!: string
   public clientType!: string
   public clientDevice!: string
+  public deviceToken!: string
   // 对应的用户编号
   public userId!: string
   // 用户名

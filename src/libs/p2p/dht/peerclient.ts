@@ -13,6 +13,8 @@ export class PeerClient extends StatusEntity {
   public clientId!: string
   public clientDevice!: string
   public clientType!: string
+  public deviceToken!: string
+  public language!: string
   // 用户头像（base64字符串）
   public avatar!: string
   public name!: string
@@ -191,6 +193,8 @@ export class PeerClientService extends BaseService {
       peerClient.clientId = myself.peerProfile.clientId
       peerClient.clientType = myself.peerProfile.clientType
       peerClient.clientDevice = myself.peerProfile.clientDevice
+      peerClient.deviceToken = myself.peerProfile.deviceToken
+      peerClient.language = myself.peerProfile.language
     }
 
     let password = myself.password
