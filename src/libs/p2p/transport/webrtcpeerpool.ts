@@ -157,7 +157,7 @@ import {LRUCache} from 'js-lru'
 
 	getAll(): WebrtcPeer[] {
 		let webrtcPeers: WebrtcPeer[] = []
-		webrtcPeerPool.webrtcPeers.forEach((peers , key) =>{
+		webrtcPeerPool.webrtcPeers.forEach((key, peers) =>{
 			for (let peer of peers) {
 				webrtcPeers.push(peer)
 			}
