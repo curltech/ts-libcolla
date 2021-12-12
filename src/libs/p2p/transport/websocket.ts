@@ -1,7 +1,7 @@
 import ReconnectingWebSocket from 'reconnectingwebsocket'
-import { TypeUtil, BlobUtil } from '../../util/util'
-import { chainMessageHandler } from '../chain/chainmessagehandler'
-import { config } from '../conf/conf'
+import {TypeUtil, BlobUtil} from '../../util/util'
+import {chainMessageHandler} from '../chain/chainmessagehandler'
+import {config} from '../conf/conf'
 import {HttpClient} from "./httpclient";
 
 export class Websocket {
@@ -10,6 +10,7 @@ export class Websocket {
     private websocket: any
     private _status: boolean = false
     private heartbeatTimer: any
+
     constructor(address: string) {
         if (address) {
             let pos = address.indexOf(this.prefix)
@@ -40,7 +41,7 @@ export class Websocket {
     init() {
         if ('WebSocket' in window) {
             this.websocket = new ReconnectingWebSocket(this.prefix + this.address, null,
-                { debug: false, reconnectInterval: 3000, maxReconnectAttempts: 5, timeoutInterval: 5000 });
+                {debug: false, reconnectInterval: 3000, maxReconnectAttempts: 5, timeoutInterval: 5000});
         } else if ('MozWebSocket' in window) {
             // @ts-ignore
             this.websocket = new MozWebSocket(this.prefix + this.address)
@@ -68,7 +69,7 @@ export class Websocket {
             let remoteAddr = _that.address
             if (evt.data) {
                 if (evt.data instanceof Blob) {
-                    let str = await BlobUtil.blobToBase64(evt.data, { type: 'text' })
+                    let str = await BlobUtil.blobToBase64(evt.data, {type: 'text'})
                     _that.onMessage(str, null, remoteAddr)
                 } else if (evt.data instanceof Uint8Array) {
                     _that.onMessage(evt.data, null, remoteAddr)
@@ -122,8 +123,9 @@ export class Websocket {
             }
         }
     }
-    async send(message: string | Uint8Array) {
-        return await this.websocket.send(message)
+
+    send(message: string | Uint8Array) {
+        return this.websocket.send(message)
     }
 
     get status(): boolean {
@@ -133,7 +135,8 @@ export class Websocket {
 
 export class WebsocketPool {
     private websockets = new Map<string, Websocket>()
-    private _websocket:Websocket=null
+    private _websocket: Websocket = null
+
     constructor() {
         let connectAddress = config.appParams.connectAddress
         if (connectAddress && TypeUtil.isArray(connectAddress)) {
@@ -184,4 +187,5 @@ export class WebsocketPool {
         this._websocket = websocket
     }
 }
+
 export let websocketPool = new WebsocketPool()
