@@ -22,7 +22,7 @@ export class PeerProfile extends StatusEntity {
   public udpSwitch!: boolean
   public downloadSwitch!: boolean
   public localDataCryptoSwitch!: boolean
-  public fullTextSearchSwitch!: boolean
+  public autoLoginSwitch!: boolean
   public developerOption!: boolean
   public logLevel!: string
   public lastSyncTime!: Date

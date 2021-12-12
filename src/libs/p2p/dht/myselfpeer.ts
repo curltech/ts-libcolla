@@ -40,6 +40,8 @@ export class MyselfPeer extends PeerEntity {
   public privateKey!: string
   public signalPublicKey!: string
   public signalPrivateKey!: string
+  public loginStatus!: string
+  public password!: string
   /**
    * 以下的字段是和证书相关，不是必须的
    */
@@ -133,7 +135,7 @@ export class MyselfPeerService extends BaseService {
     peerProfile.udpSwitch = false
     peerProfile.downloadSwitch = false
     peerProfile.localDataCryptoSwitch = false
-    peerProfile.fullTextSearchSwitch = false
+    peerProfile.autoLoginSwitch = true
     peerProfile.developerOption = false
     peerProfile.logLevel = 'none'
     peerProfile.lastSyncTime = currentDate
@@ -334,7 +336,7 @@ export class MyselfPeerService extends BaseService {
         peerProfile.udpSwitch = peers[0].udpSwitch
         peerProfile.downloadSwitch = peers[0].downloadSwitch
         peerProfile.localDataCryptoSwitch = peers[0].localDataCryptoSwitch
-        peerProfile.fullTextSearchSwitch = peers[0].fullTextSearchSwitch
+        peerProfile.autoLoginSwitch = peers[0].autoLoginSwitch
         peerProfile.developerOption = peers[0].developerOption
         peerProfile.logLevel = peers[0].logLevel
         peerProfile.lastSyncTime = new Date('1970-01-01T00:00:00.000Z')
@@ -436,7 +438,7 @@ export class MyselfPeerService extends BaseService {
       myself.myselfPeerClient.udpSwitch = myself.peerProfile.udpSwitch,
       myself.myselfPeerClient.downloadSwitch = myself.peerProfile.downloadSwitch,
       myself.myselfPeerClient.localDataCryptoSwitch = myself.peerProfile.localDataCryptoSwitch,
-      myself.myselfPeerClient.fullTextSearchSwitch = myself.peerProfile.fullTextSearchSwitch,
+      myself.myselfPeerClient.autoLoginSwitch = myself.peerProfile.autoLoginSwitch,
       myself.myselfPeerClient.developerOption = myself.peerProfile.developerOption,
       myself.myselfPeerClient.logLevel = myself.peerProfile.logLevel,
       myself.myselfPeerClient.lastSyncTime = myself.peerProfile.lastSyncTime
