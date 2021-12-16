@@ -3,10 +3,9 @@ import { BaseAction } from '../baseaction'
 
 // Socket消息类型
 export class ChatMessageType {
-    static ADD_LINKMAN_INDIVIDUAL = 'ADD_LINKMAN_INDIVIDUAL' // 新增联系人请求
-    static ADD_LINKMAN_INDIVIDUAL_RECEIPT = 'ADD_LINKMAN_INDIVIDUAL_RECEIPT' // 新增联系人请求接收回复
+    static ADD_LINKMAN = 'ADD_LINKMAN' // 新增联系人请求
+    static ADD_LINKMAN_RECEIPT = 'ADD_LINKMAN_RECEIPT' // 新增联系人请求接收回复
     static LOGOUT = 'LOGOUT'
-    static CALL_CLOSE = 'CALL_CLOSE'
 	static MIGRATE = 'MIGRATE'
 	static BACKUP = 'BACKUP'
 	static RESTORE = 'RESTORE'
