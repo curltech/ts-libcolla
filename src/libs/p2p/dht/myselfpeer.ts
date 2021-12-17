@@ -207,7 +207,6 @@ export class MyselfPeerService extends BaseService {
         myselfPeer.privateKey = await openpgp.export(privateKey, newPassword)
         myselfPeer.peerPrivateKey = await priv.export(newPassword, 'libp2p-key')
         myselfPeer.signalPrivateKey = await signalProtocol.export(newPassword)
-        myselfPeer.signalPublicKey = await signalProtocol.exportPublic(myselfPeer.mobile)
         myselfPeer.updateDate = currentDate
       }
       myselfPeers = await this.update(myselfPeers)
@@ -217,7 +216,6 @@ export class MyselfPeerService extends BaseService {
           myself.myselfPeerClient.privateKey = myselfPeer.privateKey
           myself.myselfPeerClient.peerPrivateKey = myselfPeer.peerPrivateKey
           myself.myselfPeerClient.signalPrivateKey = myselfPeer.signalPrivateKey
-          myself.myselfPeerClient.signalPublicKey = myselfPeer.signalPublicKey
           break
         }
       }
@@ -378,6 +376,7 @@ export class MyselfPeerService extends BaseService {
       delete peers[0].clientDevice
       delete peers[0].lastSyncTime
       delete peers[0].signalPublicKey
+      delete peers[0].signalPrivateKey
       json = JSON.stringify(peers)
     }
 
@@ -425,7 +424,8 @@ export class MyselfPeerService extends BaseService {
       myself.myselfPeerClient.mobileVerified = myself.myselfPeer.mobileVerified
       myself.myselfPeerClient.visibilitySetting = myself.myselfPeer.visibilitySetting
       myself.myselfPeerClient.lastUpdateTime = myself.myselfPeer.lastUpdateTime
-      myself.myselfPeerClient.signalPublicKey = myself.myselfPeer.signalPublicKey 
+      myself.myselfPeerClient.signalPublicKey = myself.myselfPeer.signalPublicKey
+      myself.myselfPeerClient.signalPrivateKey = myself.myselfPeer.signalPrivateKey 
     }
     if (myself.peerProfile) {
       myself.myselfPeerClient.clientId = myself.peerProfile.clientId,
