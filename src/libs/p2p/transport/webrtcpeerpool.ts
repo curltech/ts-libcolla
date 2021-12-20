@@ -86,6 +86,7 @@ import {LRUCache} from 'js-lru'
 				for (let webrtcPeer of webrtcPeers) {
 					if(!webrtcPeer.clientId || clientId === webrtcPeer.clientId)
 					 webrtcPeers.splice(i, 1)
+					 await webrtcPeer.destroy({})
 					++i
 				}
 				if (webrtcPeers && webrtcPeers.length === 0) {
