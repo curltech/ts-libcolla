@@ -3,7 +3,6 @@ import { config } from '../conf/conf'
 import { Client, LocalStream, Signal, Trickle } from 'ion-sdk-js'
 import { Configuration } from 'ion-sdk-js/lib/client'
 import { IonSignalAction } from '../chain/action/ionsignal'
-import {webrtcPeerPool} from "./webrtcpeerpool"
 
 /**
  * ion sfu自定义的信号实现
