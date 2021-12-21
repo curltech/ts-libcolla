@@ -13,8 +13,8 @@ import { myself } from '../dht/myselfpeer'
 import { ObjectUtil } from '../../util/util'
 import { PayloadType } from './baseaction'
 
-const packetSize = 4*1024*1024
-const webRtcPacketSize = 128*1024
+const packetSize = 4 * 1024 * 1024
+const webRtcPacketSize = 128 * 1024
 
 /**
  * 原始消息的分派处理
@@ -378,12 +378,12 @@ export class ChainMessageHandler {
 		if (slices.length === sliceSize) {
 			let payload = null
 			for (let slice of slices) {
-            	let _payload = slice.Payload
-                payload = payload ? payload + _payload : _payload
+				let _payload = slice.Payload
+				payload = payload ? payload + _payload : _payload
 			}
-            console.log("merge")
+			console.log("merge")
 			console.log(chainMessage)
-            console.log(payload)
+			console.log(payload)
 			chainMessage.Payload = payload
 			this.caches.delete(uuid)
 

@@ -3,14 +3,14 @@ import { WebrtcPeer } from '../transport/webrtc-peer'
 import { config } from '../conf/conf'
 import { SignalAction } from '../chain/action/signal'
 import { logService } from '../db/log'
-import {LRUCache} from 'js-lru'
+import { LRUCache } from 'js-lru'
 /**
  * webrtc的连接池，键值是对方的peerId
  */
- export class WebrtcPeerPool {
-	public peerId : string
-	public peerPublicKey : string
-	public clientId : string
+export class WebrtcPeerPool {
+	public peerId: string
+	public peerPublicKey: string
+	public clientId: string
 	private webrtcPeers = new LRUCache(100)
 	private _events: Map<string, any> = new Map<string, any>()
 	private _signalAction: SignalAction = null
@@ -63,7 +63,7 @@ import {LRUCache} from 'js-lru'
 		return null
 	}
 
-	async create(peerId: string, options:any, router: any): Promise<WebrtcPeer> {
+	async create(peerId: string, options: any, router: any): Promise<WebrtcPeer> {
 		let webrtcPeers: WebrtcPeer[] = null
 		if (webrtcPeerPool.webrtcPeers.find(peerId)) {
 			webrtcPeers = webrtcPeerPool.webrtcPeers[peerId]
@@ -84,10 +84,11 @@ import {LRUCache} from 'js-lru'
 			if (webrtcPeers && webrtcPeers.length > 0) {
 				let i: number = 0
 				for (let webrtcPeer of webrtcPeers) {
-					if(!webrtcPeer.clientId || clientId === webrtcPeer.clientId)
-					 webrtcPeers.splice(i, 1)
-					 await webrtcPeer.destroy({})
-					++i
+					if (!clientId || !webrtcPeer.clientId || clientId === webrtcPeer.clientId) {
+						webrtcPeers.splice(i, 1)
+						await webrtcPeer.destroy({})
+						++i
+					}
 				}
 				if (webrtcPeers && webrtcPeers.length === 0) {
 					webrtcPeerPool.webrtcPeers.remove(peerId)
@@ -105,13 +106,13 @@ import {LRUCache} from 'js-lru'
 				let i: number = 0
 				let _connected: boolean = false
 				for (let _webrtcPeer of webrtcPeers) {
-					if(_webrtcPeer === webrtcPeer){
+					if (_webrtcPeer === webrtcPeer) {
 						console.log('emit removeWebrtcPeer self')
 						webrtcPeers.splice(i, 1)
 						await webrtcPeer.destroy({})
-					}else{
+					} else {
 						console.log('emit do not removeWebrtcPeer,because other')
-						if(_webrtcPeer.connected){
+						if (_webrtcPeer.connected) {
 							_connected = true
 							console.log('other && connected')
 						}
@@ -121,7 +122,7 @@ import {LRUCache} from 'js-lru'
 				if (webrtcPeers && webrtcPeers.length === 0) {
 					webrtcPeerPool.webrtcPeers.remove(peerId)
 				}
-				if(!_connected){
+				if (!_connected) {
 					await webrtcPeerPool.emitEvent('close', { source: webrtcPeer })
 				}
 			}
@@ -131,7 +132,7 @@ import {LRUCache} from 'js-lru'
 		}
 
 
-		
+
 	}
 	/**
 	 * 获取连接已经建立的连接，可能是多个
@@ -158,17 +159,17 @@ import {LRUCache} from 'js-lru'
 
 	getAll(): WebrtcPeer[] {
 		let webrtcPeers: WebrtcPeer[] = []
-		webrtcPeerPool.webrtcPeers.forEach((key, peers) =>{
+		webrtcPeerPool.webrtcPeers.forEach((key, peers) => {
 			for (let peer of peers) {
 				webrtcPeers.push(peer)
 			}
 		})
 		return webrtcPeers
 	}
-	async clear(){
+	async clear() {
 		let webrtcPeers = this.getAll()
-		for(let peer of webrtcPeers){
-			await webrtcPeerPool.removeWebrtcPeer(peer.targetPeerId,peer)
+		for (let peer of webrtcPeers) {
+			await webrtcPeerPool.removeWebrtcPeer(peer.targetPeerId, peer)
 		}
 	}
 	/**
@@ -183,11 +184,11 @@ import {LRUCache} from 'js-lru'
 			console.info('receive signal type: ' + type + ' from webrtcPeer: ' + peerId)
 		}
 		let clientId: string
-		if(type === 'offer' || type === 'answer'){
-			if(data.extension && data.extension.clientId){
+		if (type === 'offer' || type === 'answer') {
+			if (data.extension && data.extension.clientId) {
 				clientId = data.extension.clientId
 			}
-			if(type === 'offer' && data.extension.force){
+			if (type === 'offer' && data.extension.force) {
 				await webrtcPeerPool.remove(peerId, clientId)
 			}
 
@@ -198,10 +199,10 @@ import {LRUCache} from 'js-lru'
 		if (!webrtcPeerPool.webrtcPeers.find(peerId)) {
 			console.info('webrtcPeer:' + peerId + ' not exist, will create receiver')
 			let iceServer = null
-			if(data.extension && data.extension.iceServer){
+			if (data.extension && data.extension.iceServer) {
 				iceServer = []
-				for(let iceServerItem of data.extension.iceServer){
-					if(iceServerItem.username){
+				for (let iceServerItem of data.extension.iceServer) {
+					if (iceServerItem.username) {
 						iceServerItem.username = webrtcPeerPool.peerId
 						iceServerItem.credential = webrtcPeerPool.peerPublicKey
 					}
@@ -212,8 +213,8 @@ import {LRUCache} from 'js-lru'
 			webrtcPeer = new WebrtcPeer(peerId, iceServer, false, null, null)
 			webrtcPeer.connectPeerId = connectPeerId
 			webrtcPeer.connectSessionId = connectSessionId
-			if(clientId){
-			webrtcPeer.clientId = clientId	
+			if (clientId) {
+				webrtcPeer.clientId = clientId
 			}
 			let webrtcPeers: WebrtcPeer[] = []
 			webrtcPeers.push(webrtcPeer)
@@ -249,8 +250,8 @@ import {LRUCache} from 'js-lru'
 			//console.info('webrtcPeer:' + peerId + ' exist, connected:' + webrtcPeer.connected)
 		}
 		if (webrtcPeer) {
-			if(clientId){
-				webrtcPeer.clientId = clientId	
+			if (clientId) {
+				webrtcPeer.clientId = clientId
 			}
 			//console.info('webrtcPeer signal data:' + JSON.stringify(data))
 			webrtcPeer.signal(data)
