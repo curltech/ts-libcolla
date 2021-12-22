@@ -156,7 +156,16 @@ export class WebrtcPeerPool {
 
 		return null
 	}
-
+	async clearPeer(peerId: string){
+		if (webrtcPeerPool.webrtcPeers.find(peerId)) {
+			let webrtcPeers: WebrtcPeer[] = webrtcPeerPool.webrtcPeers.get(peerId)
+			if (webrtcPeers && webrtcPeers.length > 0) {
+				for (let webrtcPeer of webrtcPeers) {
+					await webrtcPeerPool.removeWebrtcPeer(peerId, webrtcPeer)
+				}
+			}
+		}
+	}
 	getAll(): WebrtcPeer[] {
 		let webrtcPeers: WebrtcPeer[] = []
 		webrtcPeerPool.webrtcPeers.forEach((key, peers) => {
