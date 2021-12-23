@@ -71,6 +71,16 @@ export class WebrtcPeerPool {
 		let webrtcPeer = new WebrtcPeer(peerId, null, true, options, router)
 		if (!webrtcPeers) {
 			webrtcPeers = []
+		}else if(webrtcPeers.length > 0){
+			//清除未建立连接的rtcpeer
+			let i: number = 0
+			for (let webrtcPeer of webrtcPeers) {
+				if (!webrtcPeer.connected) {
+					webrtcPeers.splice(i, 1)
+					await webrtcPeer.destroy({})
+				}
+				++i
+			}
 		}
 		webrtcPeers.push(webrtcPeer)
 		webrtcPeerPool.webrtcPeers.put(peerId, webrtcPeers)
