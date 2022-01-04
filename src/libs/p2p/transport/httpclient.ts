@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as cookie from 'tiny-cookie'
-import {config} from '../conf/conf'
-import {TypeUtil} from '../../util/util'
+import { config } from '../conf/conf'
+import { TypeUtil } from '../../util/util'
 
 export class HttpClient {
     private _client: any

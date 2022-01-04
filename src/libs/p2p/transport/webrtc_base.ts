@@ -1,9 +1,8 @@
-import { TypeUtil } from '../../util/util'
 import { chainMessageHandler } from '../chain/chainmessagehandler'
 import { rtcCandidateAction } from '../chain/action/rtccandidate'
 import { rtcOfferAction } from '../chain/action/rtcoffer'
 import { rtcAnswerAction } from '../chain/action/rtcanswer'
-import { myself, Myself, MyselfPeer, myselfPeerService } from '../dht/myselfpeer'
+import { myself } from '../dht/myselfpeer'
 import Worker from './webrtc.worker'
 import { webrtcEncrypt } from './webrtc-encrypt'
 

@@ -21,9 +21,9 @@ import { dispatchDatastore, dispatchPool } from './datastore/ds'
 import { libp2pClientPool, Libp2pPipe } from './transport/libp2p'
 
 //const webrtcDirect = require('libp2p-webrtc-direct')
-const multiaddr = require('multiaddr')
+//const multiaddr = require('multiaddr')
 //const pipe = require('pull-stream')
-const { collect } = require('streaming-iterables')
+//const { collect } = require('streaming-iterables')
 const PeerId = require('peer-id')
 const libp2pcrypto = require('libp2p-crypto')
 const { FaultTolerance } = require('libp2p/src/transport-manager')

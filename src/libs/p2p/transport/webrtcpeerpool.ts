@@ -1,4 +1,4 @@
-import { TypeUtil, CollaUtil } from '../../util/util'
+import { TypeUtil } from '../../util/util'
 import { WebrtcPeer } from '../transport/webrtc-peer'
 import { config } from '../conf/conf'
 import { SignalAction } from '../chain/action/signal'

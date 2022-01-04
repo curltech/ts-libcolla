@@ -1,8 +1,7 @@
 import ReconnectingWebSocket from 'reconnectingwebsocket'
-import {TypeUtil, BlobUtil} from '../../util/util'
-import {chainMessageHandler} from '../chain/chainmessagehandler'
-import {config} from '../conf/conf'
-import {HttpClient} from "./httpclient";
+import { TypeUtil, BlobUtil } from '../../util/util'
+import { chainMessageHandler } from '../chain/chainmessagehandler'
+import { config } from '../conf/conf'
 
 export class Websocket {
     private prefix: string = 'wss://'
@@ -41,7 +40,7 @@ export class Websocket {
     init() {
         if ('WebSocket' in window) {
             this.websocket = new ReconnectingWebSocket(this.prefix + this.address, null,
-                {debug: false, reconnectInterval: 3000, maxReconnectAttempts: 5, timeoutInterval: 5000});
+                { debug: false, reconnectInterval: 3000, maxReconnectAttempts: 5, timeoutInterval: 5000 })
         } else if ('MozWebSocket' in window) {
             // @ts-ignore
             this.websocket = new MozWebSocket(this.prefix + this.address)
@@ -56,12 +55,12 @@ export class Websocket {
             _that.heartbeatTimer = setInterval(function () {
                 _that.websocket.send(JSON.stringify({
                     contentType: "Heartbeat"
-                }));
+                }))
             }, 55 * 1000)
             _that.onOpen(evt)
         }
         this.websocket.onerror = function (evt) {
-            console.error("WebSocket Error!" + _that.address);
+            console.error("WebSocket Error!" + _that.address)
             _that.websocket.socketStatus = false
             _that.onError(evt)
         }
@@ -69,7 +68,7 @@ export class Websocket {
             let remoteAddr = _that.address
             if (evt.data) {
                 if (evt.data instanceof Blob) {
-                    let str = await BlobUtil.blobToBase64(evt.data, {type: 'text'})
+                    let str = await BlobUtil.blobToBase64(evt.data, { type: 'text' })
                     _that.onMessage(str, null, remoteAddr)
                 } else if (evt.data instanceof Uint8Array) {
                     _that.onMessage(evt.data, null, remoteAddr)
@@ -104,7 +103,7 @@ export class Websocket {
     }
 
     onMessage(msg: string | Uint8Array, peerId: string, addr: string) {
-        console.info('websocket receive message from peerId:' + peerId + ';addr:' + addr)
+        console.info('websocket receive message from peerId:' + peerId + ', addr:' + addr)
         console.info('websocket receive message:' + msg)
         if (msg instanceof Uint8Array) {
             chainMessageHandler.receiveRaw(msg, peerId, addr)
