@@ -10,7 +10,7 @@ export class Log extends BaseEntity {
 }
 
 export class LogService extends BaseService {
-	private logLevel: string = 'none'
+	private logLevel: string = 'error'
 	public static logLevels = ['log', 'warn', 'error', 'none']
 
 	setLogLevel(logLevel: string) {
@@ -30,7 +30,9 @@ export class LogService extends BaseService {
 			log.description = description
 			log.code = code
 			log.level = level
-			log.peerId = myself.myselfPeer.peerId
+			if (myself.myselfPeer && myself.myselfPeer.peerId) {
+				log.peerId = myself.myselfPeer.peerId
+			}
 			log.createTimestamp = new Date().getTime()
 			log = await this.insert(log)
 		}
@@ -65,7 +67,7 @@ export class LogService extends BaseService {
 					createTimestampStart = searchTimestamp
 					createTimestampEnd = searchTimestamp + 24 * 60 * 60 * 1000
 				}
-				if (log.peerId === myself.myselfPeer.peerId
+				if ((!log.peerId || log.peerId === myself.myselfPeer.peerId)
 				  && (!level || log.level === level)
 				  && (!searchTimestamp || (log.createTimestamp >= createTimestampStart && log.createTimestamp < createTimestampEnd))) {
 					if (logResult.highlighting.code) {
