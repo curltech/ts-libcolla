@@ -56,13 +56,13 @@ export class ObjectUtil {
 						target[key] = src[key]
 					} else {
 						if (override === true) {
-						target[key] = src[key]
+							target[key] = src[key]
 						}
 					}
 				}
 			}
 		} else {
-		//console.warn('merged object is null!')
+			//console.warn('merged object is null!')
 		}
 	}
 }
@@ -206,7 +206,7 @@ export class StringUtil {
 			len = str.length;
 		} else {
 			if (parseInt(len) < 0 || parseInt(len) > str.length) {
-			len = str.length;
+				len = str.length;
 			}
 		}
 
@@ -302,15 +302,15 @@ export class StringUtil {
 	static decodeURI(str) {
 		return decodeURIComponent(escape(str))
 	}
-	static getSize(str){
-        const arr = ['B', 'KB', 'MB', 'GB', 'TB'];
-        let sizeUnit = 0;
-        let size = str.length * 2
-        while(size > 1024) {
-            size /= 1024;
-            ++sizeUnit;
-        }
-        return `${size.toFixed(2)}${arr[sizeUnit]}`;
+	static getSize(str) {
+		const arr = ['B', 'KB', 'MB', 'GB', 'TB'];
+		let sizeUnit = 0;
+		let size = str.length * 2
+		while (size > 1024) {
+			size /= 1024;
+			++sizeUnit;
+		}
+		return `${size.toFixed(2)}${arr[sizeUnit]}`;
 	}
 }
 
@@ -329,7 +329,7 @@ export class MobileNumberUtil {
 		// PhoneNumberUtil.parse() returns an i18n.phonenumbers.PhoneNumber object
 		const phoneObject = PhoneNumberUtil.parse(phoneNumber, country);
 
-		const type =  PhoneNumberUtil.getNumberType(phoneObject);
+		const type = PhoneNumberUtil.getNumberType(phoneObject);
 
 		return type === PhoneNumberType.MOBILE || type === PhoneNumberType.FIXED_LINE_OR_MOBILE;
 	};
@@ -351,7 +351,7 @@ export class MobileNumberUtil {
 
 	static getRegionCodeForCountryCode = (countryCode) =>
 		PhoneNumberUtil.getRegionCodeForCountryCode(countryCode)
-	
+
 	static getCountryCodeForRegion = (regionCode) =>
 		PhoneNumberUtil.getCountryCodeForRegion(regionCode)
 }
@@ -359,19 +359,19 @@ export class MobileNumberUtil {
 export class CollaUtil {
 	static merge(target, src, override) {
 		if (src && target) {
-		for (var key in src) {
-			if (src.hasOwnProperty(key)) {
-			if (!target.hasOwnProperty(key)) {
-				target[key] = src[key]
-			} else {
-				if (override === true) {
-				target[key] = src[key]
+			for (var key in src) {
+				if (src.hasOwnProperty(key)) {
+					if (!target.hasOwnProperty(key)) {
+						target[key] = src[key]
+					} else {
+						if (override === true) {
+							target[key] = src[key]
+						}
+					}
 				}
 			}
-			}
-		}
 		} else {
-		//console.warn('merged object is null!')
+			//console.warn('merged object is null!')
 		}
 	}
 	/**
@@ -384,25 +384,25 @@ export class CollaUtil {
 		if (null === values || "object" !== typeof values) return values
 		// Handle Date
 		if (values instanceof Date) {
-		copy = new Date()
-		copy.setTime(values.getTime())
-		return copy
+			copy = new Date()
+			copy.setTime(values.getTime())
+			return copy
 		}
 		// Handle Array
 		if (values instanceof Array) {
-		copy = []
-		for (var i = 0, len = values.length; i < len; i++) {
-			copy[i] = values[i]
-		}
-		return copy
+			copy = []
+			for (var i = 0, len = values.length; i < len; i++) {
+				copy[i] = values[i]
+			}
+			return copy
 		}
 		// Handle Object
 		if (values instanceof Object) {
-		copy = {}
-		for (var attr in values) {
-			if (values.hasOwnProperty(attr)) copy[attr] = values[attr]
-		}
-		return copy
+			copy = {}
+			for (var attr in values) {
+				if (values.hasOwnProperty(attr)) copy[attr] = values[attr]
+			}
+			return copy
 		}
 		throw new Error("Unable to copy values! Its type isn't supported.");
 	}
@@ -416,25 +416,25 @@ export class CollaUtil {
 		if (null == values || "object" != typeof values) return values;
 		// Handle Date
 		if (values instanceof Date) {
-		copy = new Date();
-		copy.setTime(values.getTime());
-		return copy;
+			copy = new Date();
+			copy.setTime(values.getTime());
+			return copy;
 		}
 		// Handle Array
 		if (values instanceof Array) {
-		copy = [];
-		for (var i = 0, len = values.length; i < len; i++) {
-			copy[i] = this.deepClone(values[i]);
-		}
-		return copy;
+			copy = [];
+			for (var i = 0, len = values.length; i < len; i++) {
+				copy[i] = this.deepClone(values[i]);
+			}
+			return copy;
 		}
 		// Handle Object
 		if (values instanceof Object) {
-		copy = {};
-		for (var attr in values) {
-			if (values.hasOwnProperty(attr)) copy[attr] = this.deepClone(values[attr]);
-		}
-		return copy;
+			copy = {};
+			for (var attr in values) {
+				if (values.hasOwnProperty(attr)) copy[attr] = this.deepClone(values[attr]);
+			}
+			return copy;
 		}
 		throw new Error("Unable to copy values! Its type isn't supported.");
 	}
@@ -443,26 +443,25 @@ export class CollaUtil {
 		let megaBytes = bytes / (1024 * 1024)
 		let gigaBytes = bytes / (1024 * 1024 * 1024)
 		if (parseInt(gigaBytes.toString())) {
-		return Math.round(gigaBytes * 10) / 10 + ' GB'
+			return Math.round(gigaBytes * 10) / 10 + ' GB'
 		} else if (parseInt(megaBytes.toString())) {
-		return Math.round(megaBytes * 10) / 10 + ' MB'
+			return Math.round(megaBytes * 10) / 10 + ' MB'
 		} else if (parseInt(kiloBytes.toString())) {
-		return Math.round(kiloBytes * 10) / 10 + ' KB'
+			return Math.round(kiloBytes * 10) / 10 + ' KB'
 		} else {
-		return bytes + ' B'
+			return bytes + ' B'
 		}
 	}
 	//数组对象方法排序:
 	static sortByKey(array, key, type) {
 		return array.sort(function (a, b) {
-		let x = a[key];
-		let y = b[key];
-		if (type === 'asc') {
-			return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-		} else if (type === 'desc') {
-			return ((y < x) ? -1 : ((y > x) ? 1 : 0));
-		}
-
+			let x = a[key];
+			let y = b[key];
+			if (type === 'asc') {
+				return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+			} else if (type === 'desc') {
+				return ((y < x) ? -1 : ((y > x) ? 1 : 0));
+			}
 		});
 	}
 	// 时分秒补零
@@ -478,9 +477,9 @@ export class CollaUtil {
 		mins = parseInt((_seconds % 3600 / 60).toString());
 		hours = parseInt((_seconds / 3600).toString());
 		if (hours) {
-		result = `${this.padZero(hours)}:${this.padZero(mins)}:${this.padZero(seconds)}`;
+			result = `${this.padZero(hours)}:${this.padZero(mins)}:${this.padZero(seconds)}`;
 		} else {
-		result = `${this.padZero(mins)}:${this.padZero(seconds)}`;
+			result = `${this.padZero(mins)}:${this.padZero(seconds)}`;
 		}
 		return result;
 	}
@@ -488,25 +487,25 @@ export class CollaUtil {
 		_str = (_str || '').replace(/^(\s|\u00A0)+|(\s|\u00A0)+$/g, ''); //去除字符串的左右两边空格，+表示匹配一次或多次，|表示或者，\s和\u00A0匹配空白字符，/^以……开头，$以……结尾，/g全局匹配,/i忽略大小写
 		let strlength = _str.length;
 		if (!strlength) { //如果字符串长度为零，返回零
-		return 0;
+			return 0;
 		}
 		let chinese = _str.match(/[\u4e00-\u9fa5]/g); //匹配中文，match返回包含中文的数组
 		return strlength + (chinese ? chinese.length : 0); //计算字符个数
 	}
 	static htmlDecode(text) {
-		let temp = document.createElement("div"); 
-		temp.innerHTML = text; 
-		let output = temp.innerText || temp.textContent; 
-		temp = null; 
-		return output; 
+		let temp = document.createElement("div");
+		temp.innerHTML = text;
+		let output = temp.innerText || temp.textContent;
+		temp = null;
+		return output;
 	}
 	static timerInterval(dom, Interval = 1000, format = null) {
 		if (!dom) {
 			return
 		}
 		let hour = 0,
-		minutes = 0,
-		seconds = 0;
+			minutes = 0,
+			seconds = 0;
 		return setInterval(function () {
 			seconds += 1;
 			if (seconds >= 60) {
@@ -542,15 +541,15 @@ export class CollaUtil {
 		let i = 0;
 		const ret = [];// 用来存储所有的Promise任务
 		const executing = []; // 正在执行的Promise对象
-		
+
 		const enqueue = function () {
 			// 边界处理，array为空数组
 			if (i === array.length) {
 				return Promise.resolve();
 			}
 			const item = array[i++];  // 获取参数
-			const p = Promise.resolve().then(() =>{
-			  iteratorFn(item, array)
+			const p = Promise.resolve().then(() => {
+				iteratorFn(item, array)
 			}); // 初始化一个promise
 			ret.push(p); // 放入promises数组
 			// promise执行完毕，从executing数组中删除
@@ -558,10 +557,20 @@ export class CollaUtil {
 			// 插入executing数字，表示正在执行的promise
 			executing.push(e);
 			// 使用Promise.rece，每当executing数组中promise数量低于poolLimit，就实例化新的promise并执行
-			let r =  executing.length >= poolLimit?Promise.race(executing):Promise.resolve()
+			let r = executing.length >= poolLimit ? Promise.race(executing) : Promise.resolve()
 			// 递归，直到遍历完array
 			return r.then(() => enqueue());
 		};
 		return enqueue().then(() => Promise.allSettled(ret)); // 最后呢，用Promise.all 等待全部任务完成，返回Promise的结果输出
+	}
+	static sleep(numberMillis) {
+		let now = new Date();
+		let exitTime = now.getTime() + numberMillis;
+		while (true) {
+			now = new Date();
+			if (now.getTime() > exitTime) {
+				return;
+			}
+		}
 	}
 }
