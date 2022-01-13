@@ -71,28 +71,31 @@ export class MyselfPeerService extends BaseService {
    * @param registerData 
    */
   async register(registerData: any): Promise<Myself> {
+    let mobile = null
     let code_ = registerData.code
     let mobile_ = registerData.mobile
-    let isPhoneNumberValid = false
-    try {
-      isPhoneNumberValid = MobileNumberUtil.isPhoneNumberValid(mobile_, MobileNumberUtil.getRegionCodeForCountryCode(code_))
-    } catch (e) {
-      console.log(e)
+    if (code_ && mobile_) {
+      let isPhoneNumberValid = false
+      try {
+        isPhoneNumberValid = MobileNumberUtil.isPhoneNumberValid(mobile_, MobileNumberUtil.getRegionCodeForCountryCode(code_))
+      } catch (e) {
+        console.log(e)
+      }
+      if (!isPhoneNumberValid) {
+        throw new Error('InvalidMobileNumber')
+      }
+      mobile = MobileNumberUtil.formatE164(mobile_, MobileNumberUtil.getRegionCodeForCountryCode(code_))
     }
-    if (!isPhoneNumberValid) {
-      throw new Error('InvalidMobileNumber')
-    }
-    let mobile = MobileNumberUtil.formatE164(mobile_, MobileNumberUtil.getRegionCodeForCountryCode(code_))
     let password = registerData.password
     let name = registerData.name
     if (password !== registerData.confirmPassword) {
       throw new Error('ErrorPassword')
     }
     let condition: any = { status: EntityStatus[EntityStatus.Effective] }
-    condition.mobile = mobile
+    condition.name = name
     let myselfPeer = await this.findOne(condition, null, null)
     if (myselfPeer) {
-      throw new Error('AccountExists')
+      throw new Error('SameNameAccountExists')
     }
     myselfPeer = new MyselfPeer()
     myselfPeer.status = EntityStatus[EntityStatus.Effective]
@@ -150,20 +153,24 @@ export class MyselfPeerService extends BaseService {
    * @param loginData 
    */
   async login(loginData: any): Promise<Myself> {
+    let mobile = null
     let code_ = loginData.code
     let mobile_ = loginData.credential
-    let isPhoneNumberValid = false
-    try {
-      isPhoneNumberValid = MobileNumberUtil.isPhoneNumberValid(mobile_, MobileNumberUtil.getRegionCodeForCountryCode(code_))
-    } catch (e) {
-      console.log(e)
+    if (code_ && mobile_) {
+      let isPhoneNumberValid = false
+      try {
+        isPhoneNumberValid = MobileNumberUtil.isPhoneNumberValid(mobile_, MobileNumberUtil.getRegionCodeForCountryCode(code_))
+      } catch (e) {
+        console.log(e)
+      }
+      if (!isPhoneNumberValid) {
+        throw new Error('InvalidMobileNumber')
+      }
+      mobile = MobileNumberUtil.formatE164(mobile_, MobileNumberUtil.getRegionCodeForCountryCode(code_))
     }
-    if (!isPhoneNumberValid) {
-      throw new Error('InvalidMobileNumber')
-    }
-    let mobile = MobileNumberUtil.formatE164(mobile_, MobileNumberUtil.getRegionCodeForCountryCode(code_))
+    let name = loginData.name
     let password = loginData.password
-    await p2pPeer.getMyself(password, null, mobile)
+    await p2pPeer.getMyself(password, null, mobile, name)
     // 标志登录成功
     if (myself.myselfPeer) {
       cookie.setCookie('token', myself.myselfPeer.peerId)
@@ -284,7 +291,8 @@ export class MyselfPeerService extends BaseService {
     return myself
   }
 
-  async importID(json: string): Promise<Myself> {
+  async importID(json: string): Promise<number> {
+    let ret: number = 0
     console.log('importID json:' + json)
     let peers = JSON.parse(json)
     if (!peers || !peers[0] || !peers[0].peerId || !peers[0].mobile) {
@@ -301,7 +309,15 @@ export class MyselfPeerService extends BaseService {
       let myselfPeer = new MyselfPeer()
       myselfPeer.peerId = peers[0].peerId
       myselfPeer.mobile = mobile
-      myselfPeer.name = peers[0].name
+      condition = { status: EntityStatus[EntityStatus.Effective] }
+      condition['name'] = peers[0].name
+      result = await this.find(condition, null, null, null, null)
+      if (result && result.length > 0) {
+        myselfPeer.name = peers[0].name + '(' + result.length + ')'
+        ret = result.length
+      } else {
+        myselfPeer.name = peers[0].name
+      }
       myselfPeer.peerPrivateKey = peers[0].peerPrivateKey
       myselfPeer.peerPublicKey = peers[0].peerPublicKey
       myselfPeer.privateKey = peers[0].privateKey
@@ -344,12 +360,10 @@ export class MyselfPeerService extends BaseService {
 
         myself.myselfPeer = myselfPeer
         myself.peerProfile = peerProfile
-
-        return myself
       }
     }
 
-    return null
+    return ret
   }
 
   exportID(): string {

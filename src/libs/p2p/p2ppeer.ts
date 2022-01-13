@@ -273,12 +273,12 @@ export class P2pPeer {
   /**
   * 获取自己节点的记录，并解开私钥
   */
-  async getMyself(password: string, peerId: string, mobile: string): Promise<Myself> {
+  async getMyself(password: string, peerId: string, mobile: string, name: string): Promise<Myself> {
     if (!password) {
       throw new Error("NoPassword")
     }
-    if (!peerId && !mobile) {
-      throw new Error("NoPeerIdAndMobile")
+    if (!peerId && !mobile && !name) {
+      throw new Error("NoPeerIdAndMobileAndName")
     }
     let param: any = { status: EntityStatus[EntityStatus.Effective] }
     if (peerId) {
@@ -286,6 +286,9 @@ export class P2pPeer {
     }
     if (mobile) {
       param.mobile = mobile
+    }
+    if (name) {
+      param.name = name
     }
     let myselfPeer = await myselfPeerService.findOne(param, null, null)
     if (!myselfPeer) {
