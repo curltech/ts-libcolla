@@ -119,19 +119,6 @@ export class WebrtcPeer {
 				data.extension = CollaUtil.deepClone(data.extension)
                delete this._webrtcPeer.extension.force
 			}
-			let _that = this
-			this._webrtcPeer._pc.getStats((err, items) => {
-				if(items && items.length > 0){
-					items.forEach(item => {
-							if (
-								(item.type === 'googCandidatePair' && item.googActiveConnection === 'true') ||
-								((item.type === 'candidatepair' || item.type === 'candidate-pair') && item.selected)
-							  ) {
-								_that._webrtcPeer._maybeReady()
-							  }
-						  })
-				}
-			})
 			await webrtcPeerPool.emitEvent('signal', { data: data, source: this })
 		})
 
