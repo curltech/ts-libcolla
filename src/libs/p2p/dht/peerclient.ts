@@ -71,7 +71,7 @@ export class PeerClientService extends BaseService {
       let condi: any = { peerId: peerId }
       let peerClients: PeerClient[] = await this.find(condi, null, null, null, null)
       if (!peerClients || peerClients.length === 0) {
-        peerClients = await this.getPeerClient(null, peerId, null)
+        peerClients = await this.getPeerClient(null, peerId, null, null)
       }
       best = await this.getBestPeerClient(peerClients, peerId)
     }
@@ -83,20 +83,31 @@ export class PeerClientService extends BaseService {
    * @param connectPeerId 
    * @param peerId 
    */
-  async getPeerClient(connectPeerId: string, peerId: string, mobileNumber: string): Promise<PeerClient[]> {
+  async getPeerClient(connectPeerId: string, peerId: string, mobileNumber: string, name: string): Promise<PeerClient[]> {
     let peerClients: PeerClient[] = null
-    let pcs: any[] = await findClientAction.findClient(connectPeerId, peerId, mobileNumber)
+    let pcs: any[] = await findClientAction.findClient(connectPeerId, peerId, mobileNumber, name)
     if (pcs && pcs.length > 0) {
       console.log(pcs)
-      let condi: any = {}
       if (peerId) {
-        condi.peerId = peerId
-      } else if (mobileNumber) {
-        condi.mobileNumber = mobileNumber
+        let condi: any = { peerId: peerId }
+        peerClients = await this.find(condi, null, null, null, null)
+        if (peerClients && peerClients.length > 0) {
+          await this.delete(peerClients)
+        }
       }
-      peerClients = await this.find(condi, null, null, null, null)
-      if (peerClients && peerClients.length > 0) {
-        await this.delete(peerClients)
+      if (mobileNumber) {
+        let condi: any = { mobileNumber: mobileNumber }
+        peerClients = await this.find(condi, null, null, null, null)
+        if (peerClients && peerClients.length > 0) {
+          await this.delete(peerClients)
+        }
+      }
+      if (name) {
+        let condi: any = { name: name }
+        peerClients = await this.find(condi, null, null, null, null)
+        if (peerClients && peerClients.length > 0) {
+          await this.delete(peerClients)
+        }
       }
       peerClients = []
       for (let pc of pcs) {
@@ -151,7 +162,7 @@ export class PeerClientService extends BaseService {
         }
       }
     }
-    if (best && peerId) {
+    if (best && peerId && best.peerId === peerId) {
       this.peerClients.set(peerId, best)
       if (best.publicKey) {
         let publicKey = await openpgp.import(best.publicKey)
@@ -163,8 +174,8 @@ export class PeerClientService extends BaseService {
     return best
   }
 
-  async findPeerClient(connectPeerId: string, peerId: string, mobileNumber: string): Promise<PeerClient> {
-    let peerClients = await this.getPeerClient(connectPeerId, peerId, mobileNumber)
+  async findPeerClient(connectPeerId: string, peerId: string, mobileNumber: string, name: string): Promise<PeerClient> {
+    let peerClients = await this.getPeerClient(connectPeerId, peerId, mobileNumber, name)
     let best = await this.getBestPeerClient(peerClients, peerId)
     return best
   }

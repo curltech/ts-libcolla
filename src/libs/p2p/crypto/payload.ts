@@ -175,7 +175,7 @@ export class SecurityPayload {
 							pass = await openpgp.verify(data, previousPublicKeyPayloadSignature, srcPublicKey)
 						}
 						if (!pass) {
-							let peerClients = await peerClientService.getPeerClient(null, securityParams.SrcPeerId, null)
+							let peerClients = await peerClientService.getPeerClient(null, securityParams.SrcPeerId, null, null)
 							if (peerClients && peerClients.length > 0) {
 								srcPublicKey = await peerClientService.getPublic(securityParams.SrcPeerId)
 								if (!srcPublicKey) {

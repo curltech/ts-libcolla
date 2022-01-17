@@ -11,8 +11,8 @@ class FindClientAction extends BaseAction {
 		super(msgType)
 	}
 
-	async findClient(connectPeerId: string, targetPeerId: string, mobileNumber: string): Promise<any[]> {
-		let chainMessage: ChainMessage = this.prepareSend(connectPeerId, { peerId: targetPeerId, mobileNumber: mobileNumber }, null)
+	async findClient(connectPeerId: string, targetPeerId: string, mobileNumber: string, name: string): Promise<any[]> {
+		let chainMessage: ChainMessage = this.prepareSend(connectPeerId, { peerId: targetPeerId, mobileNumber: mobileNumber, name: name }, null)
 
 		let response: ChainMessage = await this.send(chainMessage)
 		if (response) {
