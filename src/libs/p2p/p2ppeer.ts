@@ -187,9 +187,6 @@ export class P2pPeer {
     if (!myselfPeer.name) {
       throw new Error("NoMyselfPeerName")
     }
-    if (!myselfPeer.mobile) {
-      throw new Error("NoMyselfPeerMobile")
-    }
     if (!password) {
       throw new Error("NoPassword")
     }
