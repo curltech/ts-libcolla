@@ -96,7 +96,7 @@ export class PeerClientService extends BaseService {
         }
       }
       if (mobileNumber) {
-        let condi: any = { mobileNumber: mobileNumber }
+        let condi: any = { mobile: mobileNumber }
         peerClients = await this.find(condi, null, null, null, null)
         if (peerClients && peerClients.length > 0) {
           await this.delete(peerClients)
@@ -275,4 +275,4 @@ export class PeerClientService extends BaseService {
     return result
   }
 }
-export let peerClientService = new PeerClientService("blc_peerClient", ['mobile'], null)
+export let peerClientService = new PeerClientService("blc_peerClient", ['peerId', 'name', 'mobile'], null)

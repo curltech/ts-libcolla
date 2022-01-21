@@ -295,7 +295,7 @@ export class MyselfPeerService extends BaseService {
     let ret: number = 0
     console.log('importID json:' + json)
     let peers = JSON.parse(json)
-    if (!peers || !peers[0] || !peers[0].peerId || !peers[0].mobile) {
+    if (!peers || !peers[0] || !peers[0].peerId || !peers[0].name) {
       throw new Error('InvalidID')
     } else {
       let condition = {}
@@ -460,4 +460,4 @@ export class MyselfPeerService extends BaseService {
     return myself.myselfPeerClient
   }
 }
-export let myselfPeerService = new MyselfPeerService("blc_myselfPeer", ['endDate', 'peerId', 'mobile', 'status', 'updateDate'], null)
+export let myselfPeerService = new MyselfPeerService("blc_myselfPeer", ['endDate', 'peerId', 'name', 'mobile', 'status', 'updateDate'], null)
