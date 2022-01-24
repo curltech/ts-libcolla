@@ -26,7 +26,7 @@ export class ConsensusAction extends BaseAction {
 
     	let response: ChainMessage = await this.send(chainMessage)
 		if (response) {
-			return response
+			return response.Payload
 		}
 
 		return null
