@@ -62,7 +62,7 @@ export class MyselfPeer extends PeerEntity {
   // 用户头像（base64字符串）
   public avatar!: string
   public mobileVerified!: string
-  // 可见性YYYYY (peerId、mobileNumber、groupChat、qrCode、contactCard）
+  // 可见性YYYYYY (peerId, mobileNumber, groupChat, qrCode, contactCard, name）
   public visibilitySetting!: string
 }
 export class MyselfPeerService extends BaseService {
@@ -114,7 +114,7 @@ export class MyselfPeerService extends BaseService {
     myselfPeer.version = 0
     myselfPeer.creditScore = 300
     myselfPeer.mobileVerified = 'N'
-    myselfPeer.visibilitySetting = 'YYYYY'
+    myselfPeer.visibilitySetting = 'YYYYYY'
     myselfPeer = await this.upsert(myselfPeer)
     myself.myselfPeer = myselfPeer
 
