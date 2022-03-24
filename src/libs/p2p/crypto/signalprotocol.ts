@@ -11,8 +11,7 @@ import { logService } from '../db/log'
  */
 export class SignalSession {
 	private targetPeerId: string
-	private connectPeerId: string
-	private connectSessionId: string
+	private clientId: string
 	private deviceId: number
 	private signalProtocolAddress: libsignal.SignalProtocolAddress
 	private sessionCipher: libsignal.SessionCipher
@@ -21,11 +20,10 @@ export class SignalSession {
 		this.sessionCipher = new libsignal.SessionCipher(signalProtocolStore, this.signalProtocolAddress)
 	}
 
-	set(targetPeerId: string, connectPeerId: string, connectSessionId: string, deviceId: number) {
+	set(targetPeerId: string, clientId: string, deviceId: number) {
 		this.deviceId = deviceId
 		this.targetPeerId = targetPeerId
-		this.connectPeerId = connectPeerId
-		this.connectSessionId = connectSessionId
+		this.clientId = clientId
 	}
 
 	async encrypt(data: Uint8Array | string): Promise<libsignal.MessageType> {
@@ -76,7 +74,7 @@ export class SignalSession {
 	async close() {
 		await this.sessionCipher.closeOpenSessionForDevice()
 		await this.sessionCipher.deleteAllSessionsForDevice()
-		signalProtocol.close(this.targetPeerId, this.connectPeerId, this.connectSessionId)
+		signalProtocol.close(this.targetPeerId, this.clientId)
 		let identifier = this.signalProtocolAddress.getName()
 		signalProtocolStore.removeSession(identifier)
 	}
@@ -248,12 +246,12 @@ export class SignalProtocol {
 		return signalPublicKey
 	}
 
-	getKey(targetPeerId: string, connectPeerId: string, connectSessionId: string): string {
-		return targetPeerId + ":" + connectPeerId + ":" + connectSessionId
+	getKey(targetPeerId: string, clientId: string): string {
+		return targetPeerId + ":" + clientId
 	}
 
-	async get(targetPeerId: string, connectPeerId: string, connectSessionId: string): Promise<SignalSession> {
-		let key = this.getKey(targetPeerId, connectPeerId, connectSessionId)
+	async get(targetPeerId: string, clientId: string): Promise<SignalSession> {
+		let key = this.getKey(targetPeerId, clientId)
 		let signalSession = null
 		if (!this.signalSessions.has(key)) {
 			// a SignalProtocolAddress
@@ -268,7 +266,7 @@ export class SignalProtocol {
 			let sessionType: libsignal.SessionType<ArrayBuffer> = await sessionBuilder.processPreKey(signalPublicKey)
 			if (sessionType) {
 				signalSession = new SignalSession(signalProtocolAddress)
-				signalSession.set(targetPeerId, connectPeerId, connectSessionId, this.deviceId)
+				signalSession.set(targetPeerId, clientId, this.deviceId)
 				this.signalSessions.set(key, signalSession)
 			}
 		} else {
@@ -277,8 +275,8 @@ export class SignalProtocol {
 		return signalSession
 	}
 
-	close(targetPeerId: string, connectPeerId: string, connectSessionId: string) {
-		let key = this.getKey(targetPeerId, connectPeerId, connectSessionId)
+	close(targetPeerId: string, clientId: string) {
+		let key = this.getKey(targetPeerId, clientId)
 		let signalSession = this.signalSessions.has(key)
 		if (signalSession) {
 			this.signalSessions.delete(key)
