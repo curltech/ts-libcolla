@@ -17,7 +17,7 @@ export class P2pChatAction extends BaseAction {
 		//chainMessage.NeedSlice = true
 		let response: ChainMessage = await this.send(chainMessage)
 		if (response) {
-			return response.Payload
+			return response
 		}
 
 		return null
