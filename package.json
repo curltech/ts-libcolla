@@ -1,6 +1,6 @@
 {
   "name": "libcolla",
-  "version": "0.0.82",
+  "version": "0.0.83",
   "description": "libcolla",
   "productName": "libcolla",
   "leadMaintainer": "hujs888 <hujs@colla.cc>",
@@ -50,7 +50,7 @@
   ],
   "dependencies": {
     "@privacyresearch/libsignal-protocol-typescript": "0.0.12",
-    "axios": "^0.21.1",
+    "axios": "^0.26.1",
     "base32.js": "^0.1.0",
     "google-libphonenumber": "^3.2.13",
     "ion-sdk-js": "^1.5.4",
