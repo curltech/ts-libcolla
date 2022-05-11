@@ -299,6 +299,7 @@ export class PounchDb extends DataStore {
 				}
 			}).catch(function (err: any) {
 				console.log(err)
+				console.log(entity)
 			})
 		}
 	}

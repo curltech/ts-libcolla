@@ -97,7 +97,7 @@ export class WebrtcPeer {
 		if (options.stream) {
 			this._localStreams.push(options.stream)
 		}
-		options.extension = { iceServer : iceServer ,clientId : webrtcPeerPool.clientId , force : true }
+		options.extension = { iceServer: iceServer, clientId: webrtcPeerPool.clientId, force: true }
 		this._options = options
 		// 自定义属性，表示本节点createOffer时加入的sfu的编号，作为出版者还是订阅者，还是都是
 		this._router = router
@@ -115,9 +115,9 @@ export class WebrtcPeer {
 			if (this._router) {
 				data.router = this._router
 			}
-			if(this._webrtcPeer.extension.force){
+			if (this._webrtcPeer.extension.force) {
 				data.extension = CollaUtil.deepClone(data.extension)
-               delete this._webrtcPeer.extension.force
+				delete this._webrtcPeer.extension.force
 			}
 			await webrtcPeerPool.emitEvent('signal', { data: data, source: this })
 		})
@@ -136,7 +136,7 @@ export class WebrtcPeer {
 		this._webrtcPeer.on('close', async () => {
 			console.info(new Date() + ':connected peer close: ' + this._targetPeerId + ';connectPeer:' + this._connectPeerId + ' session:' + this._connectSessionId + ', is closed')
 			await webrtcPeerPool.removeWebrtcPeer(this._targetPeerId, this)
-			
+
 		})
 
 		/**
@@ -171,16 +171,16 @@ export class WebrtcPeer {
 		})
 	}
 
-	on(name:string, fn:any){
-		this._webrtcPeer.on(name,fn)
+	on(name: string, fn: any) {
+		this._webrtcPeer.on(name, fn)
 	}
 
-	once(name:string, fn:any){
-		this._webrtcPeer.once(name,fn)
+	once(name: string, fn: any) {
+		this._webrtcPeer.once(name, fn)
 	}
 
-	removeListener(name:string, fn:any){
-		this._webrtcPeer.removeListener(name,fn)
+	removeListener(name: string, fn: any) {
+		this._webrtcPeer.removeListener(name, fn)
 	}
 
 	attachStream(element: any, stream: any) {
@@ -200,35 +200,33 @@ export class WebrtcPeer {
 	/**
 	 * 空参数全部删除
 	 */
-	removeStream(stream: any){
+	removeStream(stream: any) {
 		this.removeLocalStream(stream)
 		this.removeRemoteStream(stream)
+		debugger
 	}
 	/**
 	 * 空参数全部删除
 	 */
-	removeLocalStream(stream: any){
+	removeLocalStream(stream: any) {
 		let i: number = 0
-		for (let _stream of this._localStreams) {
-			if (!stream || _stream === stream){
+		for (let i = this._localStreams.length - 1; i >= 0; i--) {
+			let _stream = this._localStreams[i]
+			if (!stream || _stream === stream) {
 				this._localStreams.splice(i, 1)
 				this._webrtcPeer.removeStream(_stream)
-				break
 			}
-			++i
 		}
 	}
 	/**
 	 * 空参数全部删除
 	 */
-	removeRemoteStream(stream: any){
-		let i: number = 0
-		for (let _stream of this._remoteStreams) {
-			if (!stream || _stream === stream){
+	removeRemoteStream(stream: any) {
+		for (let i = this._remoteStreams.length - 1; i >= 0; i--) {
+			let _stream = this._remoteStreams[i]
+			if (!stream || _stream === stream) {
 				this._remoteStreams.splice(i, 1)
-				break
 			}
-			++i
 		}
 	}
 	signal(data: any) {

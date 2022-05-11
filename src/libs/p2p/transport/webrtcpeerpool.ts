@@ -66,25 +66,20 @@ export class WebrtcPeerPool {
 	async create(peerId: string, options: any, router: any): Promise<WebrtcPeer> {
 		let webrtcPeers: WebrtcPeer[] = null
 		if (webrtcPeerPool.webrtcPeers.find(peerId)) {
-			webrtcPeers = webrtcPeerPool.webrtcPeers[peerId]
+			webrtcPeers = webrtcPeerPool.webrtcPeers.get(peerId)
 		}
 		let webrtcPeer = new WebrtcPeer(peerId, null, true, options, router)
 		if (!webrtcPeers) {
 			webrtcPeers = []
 		} else if (webrtcPeers.length > 0) {
 			//清除未建立连接的rtcpeer
-			let i: number = 0
-			for (let webrtcPeer of webrtcPeers) {
-				if (!webrtcPeer.connected) {
-					webrtcPeers.splice(i, 1)
-					await webrtcPeer.destroy({})
-				}
-				++i
+			for (let i = webrtcPeers.length - 1; i >= 0; i--) {
+				webrtcPeers.splice(i, 1)
+				await webrtcPeers[i].destroy({})
 			}
 		}
 		webrtcPeers.push(webrtcPeer)
 		webrtcPeerPool.webrtcPeers.put(peerId, webrtcPeers)
-
 		return webrtcPeer
 	}
 
@@ -92,12 +87,11 @@ export class WebrtcPeerPool {
 		if (webrtcPeerPool.webrtcPeers.find(peerId)) {
 			let webrtcPeers: WebrtcPeer[] = webrtcPeerPool.webrtcPeers.get(peerId)
 			if (webrtcPeers && webrtcPeers.length > 0) {
-				let i: number = 0
-				for (let webrtcPeer of webrtcPeers) {
+				for (let i = webrtcPeers.length - 1; i >= 0; i--) {
+					let webrtcPeer = webrtcPeers[i]
 					if (!clientId || !webrtcPeer.clientId || clientId === webrtcPeer.clientId) {
 						webrtcPeers.splice(i, 1)
 						await webrtcPeer.destroy({})
-						++i
 					}
 				}
 				if (webrtcPeers && webrtcPeers.length === 0) {
@@ -113,9 +107,9 @@ export class WebrtcPeerPool {
 		if (webrtcPeerPool.webrtcPeers.find(peerId)) {
 			let webrtcPeers: WebrtcPeer[] = webrtcPeerPool.webrtcPeers.get(peerId)
 			if (webrtcPeers && webrtcPeers.length > 0) {
-				let i: number = 0
 				let _connected: boolean = false
-				for (let _webrtcPeer of webrtcPeers) {
+				for (let i = webrtcPeers.length - 1; i >= 0; i--) {
+					let _webrtcPeer = webrtcPeers[i]
 					if (_webrtcPeer === webrtcPeer) {
 						console.log('emit removeWebrtcPeer self')
 						webrtcPeers.splice(i, 1)
@@ -127,7 +121,6 @@ export class WebrtcPeerPool {
 							console.log('other && connected')
 						}
 					}
-					++i
 				}
 				if (webrtcPeers && webrtcPeers.length === 0) {
 					webrtcPeerPool.webrtcPeers.remove(peerId)

@@ -77,6 +77,7 @@ export class SignalSession {
 		signalProtocol.close(this.targetPeerId, this.clientId)
 		let identifier = this.signalProtocolAddress.getName()
 		signalProtocolStore.removeSession(identifier)
+		//signalProtocolStore.removeIdentity(identifier)
 	}
 }
 
@@ -297,4 +298,3 @@ export class SignalProtocol {
 	}
 }
 export let signalProtocol = new SignalProtocol()
-window.signalProtocol = signalProtocol
