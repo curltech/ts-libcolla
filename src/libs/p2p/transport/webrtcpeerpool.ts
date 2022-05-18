@@ -74,8 +74,9 @@ export class WebrtcPeerPool {
 		} else if (webrtcPeers.length > 0) {
 			//清除未建立连接的rtcpeer
 			for (let i = webrtcPeers.length - 1; i >= 0; i--) {
-				webrtcPeers.splice(i, 1)
 				await webrtcPeers[i].destroy({})
+				webrtcPeers.splice(i, 1)
+				
 			}
 		}
 		webrtcPeers.push(webrtcPeer)
