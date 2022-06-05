@@ -20,5 +20,16 @@ class ConnectAction extends BaseAction {
 
 		return null
 	}
+
+	receive(chainMessage: ChainMessage): ChainMessage {
+		chainMessage = super.receive(chainMessage)
+		if (chainMessage && connectAction.receivers) {
+			connectAction.receivers.forEach(async (receiver, key) => {
+				await receiver(chainMessage)
+			})
+
+			return null
+		}
+	}
 }
 export let connectAction = new ConnectAction(MsgType.CONNECT)
